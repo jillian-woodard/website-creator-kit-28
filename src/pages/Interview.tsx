@@ -11,10 +11,11 @@ import ShoppingPreferenceStep from "@/components/interview/ShoppingPreferenceSte
 import OccasionsStep from "@/components/interview/OccasionsStep";
 import ABStep from "@/components/interview/ABStep";
 import BudgetStep from "@/components/interview/BudgetStep";
+import RecalibrationStep from "@/components/interview/RecalibrationStep";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-const STEPS = ["Vibe", "Visual Cues", "Body", "Shopping", "Occasions", "Budget"];
+const STEPS = ["Visual Cues", "Vibe", "Body", "Shopping", "Occasions", "Budget", "Recalibrate"];
 
 const Interview = () => {
   const [step, setStep] = useState(0);
@@ -30,12 +31,13 @@ const Interview = () => {
     Object.entries(data.categoryBudgets ?? {}).filter(([, b]) => b?.enabled);
 
   const canProceed = () => {
-    if (step === 0) return data.vibeDescription.trim().length > 0;
-    if (step === 1) return data.selectedVisualCues.length > 0;
+    if (step === 0) return data.selectedVisualCues.length > 0;
+    if (step === 1) return data.vibeDescription.trim().length > 0;
     if (step === 2) return data.bodyInputMethod !== null && data.heightInches !== null;
     if (step === 3) return data.shoppingPreference !== null;
     if (step === 4) return (data.occasions?.length ?? 0) > 0;
     if (step === 5) return enabledBudgets().length > 0;
+    if (step === 6) return data.recalibrationCadence !== null;
     return true;
   };
 
@@ -224,12 +226,13 @@ const Interview = () => {
       {/* Content */}
       <main className="pt-24 pb-32 container mx-auto px-6 lg:px-16 max-w-3xl">
         <div className="animate-fade-in-up" key={step}>
-          {step === 0 && <VibeStep />}
-          {step === 1 && <VisualCuesStep />}
+          {step === 0 && <VisualCuesStep />}
+          {step === 1 && <VibeStep />}
           {step === 2 && <BodyStep />}
           {step === 3 && <ShoppingPreferenceStep />}
           {step === 4 && <OccasionsStep />}
           {step === 5 && <BudgetStep />}
+          {step === 6 && <RecalibrationStep />}
         </div>
       </main>
 
