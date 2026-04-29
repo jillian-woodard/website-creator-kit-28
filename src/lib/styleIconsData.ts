@@ -32,7 +32,7 @@ export const styleIcons: StyleIcon[] = [
   { id: "julia", name: "Julia Sarr-Jamois", from: "London, England", img: juliaImg, category: "Streetwear & Casual", instagram: "https://instagram.com/juliasarrjamois" },
   { id: "asap", name: "A$AP Rocky", from: "Harlem, USA", img: asapImg, category: "Streetwear & Casual", instagram: "https://instagram.com/asaprocky" },
   { id: "zendaya", name: "Zendaya", from: "Los Angeles, USA", img: zendayaImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/zendaya" },
-  { id: "timothee", name: "Timothée Chalamet", from: "New York, USA", img: timotheeImg, category: "Streetwear & Casual", instagram: "https://instagram.com/tchalamet" },
+  { id: "timothee", name: "Timothée Chalamet", from: "New York, USA", img: timotheeImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/tchalamet" },
   { id: "hailey", name: "Hailey Bieber", from: "Tucson, USA", img: haileyBieberImg, category: "Classic & Tailored", instagram: "https://instagram.com/haileybieber" },
   { id: "hyunbin", name: "Hyun Bin", from: "Seoul, South Korea", img: hyunBinImg, category: "Classic & Tailored", instagram: "https://instagram.com/vast_com" },
   { id: "rihanna", name: "Rihanna", from: "Barbados", img: rihannaImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/badgalriri" },
