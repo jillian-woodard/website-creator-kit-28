@@ -1,16 +1,292 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Sparkles, UserCircle, ShoppingBag, Shirt, CalendarDays, ChevronDown, Info } from "lucide-react";
+import { styleIcons } from "@/lib/styleIconsData";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const EXPLORE_ITEMS = [
+  { icon: Sparkles, title: "Style Interview", desc: "Build your aesthetic identity", to: "/interview" },
+  { icon: UserCircle, title: "Your Profile", desc: "Keywords, silhouettes, palette", to: "/profile" },
+  { icon: ShoppingBag, title: "Suggested Items", desc: "Picks within your budget", to: "/foryou" },
+  { icon: Shirt, title: "Your Closet", desc: "What you already own", to: "/closet" },
+  { icon: CalendarDays, title: "Your Week Ahead", desc: "Outfits planned for the week", to: "/planner" },
+  { icon: Info, title: "About Us", desc: "Our mission and why we built it", to: "/about" },
+];
+
+const Index = () => {
+  const navigate = useNavigate();
+
+  const img = (id: string) => styleIcons.find((i) => i.id === id)?.img;
+
+  const heroB = img("rihanna");
+  const heroC = img("timothee");
+
+  // Marquee row — duplicated for seamless loop
+  const marqueeIcons = [...styleIcons, ...styleIcons];
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen bg-background overflow-hidden">
+      {/* Header */}
+      <header className="absolute top-0 inset-x-0 z-20 px-6 lg:px-16 py-5 flex items-center justify-between">
+        <span className="text-xs font-sans font-semibold tracking-[0.3em] uppercase text-foreground">
+          Figure
+        </span>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs font-sans uppercase tracking-[0.2em] rounded-none gap-1.5"
+              >
+                Explore
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-72 bg-background border border-border rounded-none p-2"
+            >
+              {EXPLORE_ITEMS.map((item) => (
+                <DropdownMenuItem
+                  key={item.to}
+                  onSelect={() => navigate(item.to)}
+                  className="flex items-start gap-3 px-3 py-3 cursor-pointer rounded-none focus:bg-card"
+                >
+                  <item.icon className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="font-serif font-bold text-sm text-foreground leading-tight">
+                      {item.title}
+                    </span>
+                    <span className="text-xs font-sans text-muted-foreground mt-0.5">
+                      {item.desc}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/auth")}
+            className="text-xs font-sans uppercase tracking-[0.2em] rounded-none"
+          >
+            Sign In
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => navigate("/auth?mode=signup")}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-sans uppercase tracking-[0.2em] rounded-none px-4"
+          >
+            Sign Up
+          </Button>
+        </div>
+      </header>
+
+      {/* HERO — two column editorial, viewport-contained */}
+      <section className="relative min-h-screen bg-background pt-24 md:pt-32 pb-12 px-6 lg:px-16 overflow-hidden">
+        <div className="max-w-7xl mx-auto min-h-[calc(100vh-9rem)] md:min-h-[calc(100vh-11rem)] grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-8 lg:gap-16 items-center">
+          {/* Left */}
+          <div className="min-w-0 max-w-full overflow-hidden space-y-6">
+            <h1
+              className="font-serif font-extrabold tracking-tight text-foreground leading-[0.95] text-4xl sm:text-5xl md:text-6xl lg:text-6xl pr-4 hyphens-none break-normal"
+              style={{ wordBreak: "normal", overflowWrap: "normal", hyphens: "none" }}
+            >
+              Style is a conversation before it&apos;s a wardrobe.
+            </h1>
+            <p className="text-lg md:text-xl font-sans font-light text-muted-foreground max-w-xl leading-snug">
+              Built around your taste, your budget, and your silhouette.
+            </p>
+            <div>
+              <Button
+                size="lg"
+                onClick={() => navigate("/interview")}
+                className="bg-foreground text-background hover:bg-foreground/90 px-8 py-6 text-xs font-sans font-semibold uppercase tracking-[0.25em] gap-3 group rounded-none"
+              >
+                Start Your Style Interview
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Right — two-image editorial composition (desktop) */}
+          <div className="relative hidden md:block min-h-[52vh] lg:min-h-[60vh]">
+            {/* Image B — anchor, flush right top */}
+            {heroB && (
+              <div className="absolute top-0 right-0 w-[65%] aspect-[3/4] max-h-[52vh] overflow-hidden bg-card">
+                <img
+                  src={heroB}
+                  alt=""
+                  className="w-full h-full object-cover object-top"
+                  loading="eager"
+                />
+              </div>
+            )}
+
+            {/* Image C — small detail crop, bottom-left accent */}
+            {heroC && (
+              <div className="absolute bottom-0 left-0 w-[40%] aspect-[4/5] max-h-[36vh] overflow-hidden bg-card z-10">
+                <img
+                  src={heroC}
+                  alt=""
+                  className="w-full h-full object-cover object-top"
+                  loading="lazy"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Mobile — single full-bleed anchor image */}
+          {heroB && (
+            <div className="md:hidden -mx-6 aspect-[4/5] overflow-hidden bg-card">
+              <img
+                src={heroB}
+                alt=""
+                className="w-full h-full object-cover object-top"
+                loading="lazy"
+              />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* STYLE ICONS — looping marquee */}
+      <section className="py-16 md:py-24 bg-background border-y border-border overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-16 mb-10 md:mb-14">
+          <h2 className="font-serif font-extrabold text-foreground leading-[0.95] tracking-tight text-3xl md:text-4xl lg:text-5xl max-w-3xl">
+            Styles we love.
+          </h2>
+        </div>
+
+        <div
+          className="relative w-full"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+          }}
+        >
+          <div className="flex gap-6 w-max animate-marquee">
+            {marqueeIcons.map((icon, idx) => (
+              <figure
+                key={`${icon.id}-${idx}`}
+                className="flex-shrink-0 w-44 md:w-56"
+              >
+                <div className="aspect-[3/4] overflow-hidden bg-card">
+                  <img
+                    src={icon.img}
+                    alt={icon.name}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
+                </div>
+                <figcaption className="pt-3">
+                  <p className="font-serif font-bold text-foreground text-sm md:text-base leading-tight">
+                    {icon.name}
+                  </p>
+                  <p className="text-[10px] md:text-xs font-sans uppercase tracking-[0.2em] text-muted-foreground mt-1">
+                    {icon.from}
+                  </p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS — typographic, no images */}
+      <section className="py-20 md:py-32 bg-card border-y border-border">
+        <div className="max-w-7xl mx-auto px-6 lg:px-16">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16 md:mb-20 gap-6">
+            <div>
+              <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary/70 mb-4">
+                Fig. 01 — How It Works
+              </p>
+              <h2 className="font-serif font-extrabold uppercase text-foreground leading-[0.88] tracking-tighter text-4xl md:text-6xl lg:text-7xl">
+                Three steps. <span className="italic font-medium normal-case lowercase">That&apos;s it.</span>
+              </h2>
+            </div>
+            <p className="text-muted-foreground font-sans text-sm md:text-base max-w-sm">
+              No wardrobe audit. No selfie required. Just tell us who you want to be.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-10 md:gap-12">
+            {[
+              {
+                step: "01",
+                title: "Drop your vibe",
+                desc: "Tell us what energy you're going for. Mood words, inspo pics, whatever feels right.",
+              },
+              {
+                step: "02",
+                title: "We build your profile",
+                desc: "AI creates your aesthetic identity: silhouettes, formality range, the whole thing.",
+              },
+              {
+                step: "03",
+                title: "Shop what fits",
+                desc: "Real outfits, real links, filtered to your budget. Never something you can't afford.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="flex flex-col border-t border-border pt-6">
+                <div className="flex items-baseline gap-4 mb-4">
+                  <span className="font-serif font-extrabold text-5xl md:text-6xl text-primary leading-none">
+                    {item.step}
+                  </span>
+                </div>
+                <h3 className="text-xl md:text-2xl font-serif font-bold uppercase text-foreground mb-3 leading-tight">
+                  {item.title}
+                </h3>
+                <p className="text-muted-foreground font-sans text-sm leading-relaxed">
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA — loud, but pulled back */}
+      <section className="py-24 md:py-40 bg-primary relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 lg:px-16 text-center relative z-10">
+          <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary-foreground/60 mb-8">
+            Fig. 03 — Your Turn
+          </p>
+          <h2 className="font-serif font-extrabold uppercase text-primary-foreground leading-[0.88] tracking-tighter text-5xl md:text-7xl mb-10">
+            Ready to lock in <span className="italic font-medium normal-case lowercase">your look?</span>
+          </h2>
+          <p className="text-primary-foreground/70 font-sans mb-12 max-w-md mx-auto text-base md:text-lg">
+            Five minutes. Walk away with a style profile and fits you can actually buy.
+          </p>
+          <Button
+            size="lg"
+            onClick={() => navigate("/interview")}
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 px-12 py-7 text-xs font-sans font-semibold uppercase tracking-[0.25em] gap-3 group rounded-none"
+          >
+            Start the Quiz
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-10 border-t border-border bg-background">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-xs text-muted-foreground font-sans uppercase tracking-[0.2em]">
+            © 2026 Figure
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
