@@ -23,6 +23,11 @@ interface CategoryRecs {
   products: Product[];
 }
 
+interface FeedbackSignals {
+  savedTitles?: string[];
+  dismissedTitles?: string[];
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -38,13 +43,17 @@ serve(async (req) => {
       throw new Error("Supabase credentials missing");
     }
 
-    const { styleProfile } = await req.json();
+    const { styleProfile, feedback } = await req.json();
     if (!styleProfile) {
       return new Response(JSON.stringify({ error: "styleProfile is required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const fb: FeedbackSignals = feedback || {};
+    const savedTitles = (fb.savedTitles || []).slice(0, 20);
+    const dismissedTitles = (fb.dismissedTitles || []).slice(0, 20);
 
     const budgetMin = styleProfile.budgetMin || styleProfile.budget_min || 50;
     const budgetMax = styleProfile.budgetMax || styleProfile.budget_max || 500;
@@ -68,7 +77,14 @@ serve(async (req) => {
       }
     })();
 
-    // STEP 1: Ask Claude to generate one specific search query per category
+    const feedbackBlock = (savedTitles.length > 0 || dismissedTitles.length > 0)
+      ? `\n\nLEARNING SIGNALS from this user's past behavior:
+${savedTitles.length > 0 ? `- LOVED (saved to shortlist): ${savedTitles.slice(0, 12).join("; ")}` : ""}
+${dismissedTitles.length > 0 ? `- REJECTED (dismissed as "not for me"): ${dismissedTitles.slice(0, 12).join("; ")}` : ""}
+
+Use these signals to adjust your queries. Lean toward the colors, fabrics, silhouettes, and retailers in the LOVED list. Avoid patterns that match the REJECTED list.`
+      : "";
+
     const systemPrompt = `You are a personal stylist translating a user's aesthetic profile into specific Google Shopping search queries, one per clothing category.
 
 ${genderRule}
@@ -85,14 +101,6 @@ Query rules:
 - Do NOT use em dashes
 - Apply the gender modifier rule above to every query.
 
-Examples of good queries:
-- Tops: "cream oversized silk blouse minimalist"
-- Bottoms: "tailored pleated wool trousers camel"
-- Dresses: "ivory silk slip midi dress"
-- Outerwear: "oversized wool blazer oatmeal"
-- Shoes: "black leather loafers minimalist women"
-- Accessories: "structured leather tote bag camel"
-
 Respond with ONLY valid JSON, no preamble, no markdown, no code fences:
 {
   "Tops": "query here",
@@ -108,7 +116,7 @@ Vibe: "${vibeDescription || "not specified"}"
 Keywords: ${keywords.length > 0 ? keywords.join(", ") : "not specified"}
 Style brief: "${styleBrief || "not specified"}"
 ${silhouetteType ? `Silhouette: ${silhouetteType}` : ""}
-Budget per piece: $${budgetMin} to $${budgetMax}
+Budget per piece: $${budgetMin} to $${budgetMax}${feedbackBlock}
 
 Generate one search query per category.`;
 
@@ -141,7 +149,6 @@ Generate one search query per category.`;
 
     const queriesByCategory: Record<string, string> = JSON.parse(jsonStr);
 
-    // STEP 2: For each category, call fetch-products in parallel
     const fetchUrl = `${SUPABASE_URL}/functions/v1/fetch-products`;
 
     const categoryResults: CategoryRecs[] = await Promise.all(
@@ -176,6 +183,7 @@ Generate one search query per category.`;
       JSON.stringify({
         categories: categoryResults,
         generatedAt: new Date().toISOString(),
+        generationId: crypto.randomUUID(),
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
