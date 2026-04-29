@@ -13,7 +13,7 @@ import maysaImg1 from "@/assets/maysa-shems-1.png";
 import hannahImg from "@/assets/hannah-harrell.png";
 import lawrenceImg from "@/assets/lawrence-schlossman.png";
 import maryannImg from "@/assets/maryann-santos.png";
-import skylarImg from "@/assets/skylar-marshai.jpg";
+import skylarImg from "@/assets/skylar-marshai.png";
 import teairaImg from "@/assets/teaira-walker.jpg";
 
 export interface StyleIcon {
