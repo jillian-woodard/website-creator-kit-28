@@ -15,6 +15,7 @@ import lawrenceImg from "@/assets/lawrence-schlossman.png";
 import maryannImg from "@/assets/maryann-santos.png";
 import skylarImg from "@/assets/skylar-marshai.png";
 import teairaImg from "@/assets/teaira-walker.png";
+import asapImg from "@/assets/asap-rocky.png";
 
 export interface StyleIcon {
   id: string;
@@ -29,7 +30,7 @@ export interface StyleIcon {
 export const styleIcons: StyleIcon[] = [
   { id: "skepta", name: "Skepta", from: "Tottenham, England", img: skeptaImg, category: "Streetwear & Casual", instagram: "https://instagram.com/skepta" },
   { id: "julia", name: "Julia Sarr-Jamois", from: "London, England", img: juliaImg, category: "Streetwear & Casual", instagram: "https://instagram.com/juliasarrjamois" },
-  { id: "asap", name: "A$AP Rocky", from: "Harlem, USA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/A%24AP_Rocky_at_the_2025_Cannes_Film_Festival_%28cropped_3x4%29.jpg/400px-A%24AP_Rocky_at_the_2025_Cannes_Film_Festival_%28cropped_3x4%29.jpg", category: "Streetwear & Casual", instagram: "https://instagram.com/asaprocky" },
+  { id: "asap", name: "A$AP Rocky", from: "Harlem, USA", img: asapImg, category: "Streetwear & Casual", instagram: "https://instagram.com/asaprocky" },
   { id: "zendaya", name: "Zendaya", from: "Los Angeles, USA", img: zendayaImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/zendaya" },
   { id: "timothee", name: "Timothée Chalamet", from: "New York, USA", img: timotheeImg, category: "Streetwear & Casual", instagram: "https://instagram.com/tchalamet" },
   { id: "hailey", name: "Hailey Bieber", from: "Tucson, USA", img: haileyBieberImg, category: "Classic & Tailored", instagram: "https://instagram.com/haileybieber" },
