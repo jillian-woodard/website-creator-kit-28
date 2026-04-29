@@ -14,7 +14,278 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      closet_items: {
+        Row: {
+          brand: string | null
+          category: string
+          color: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string
+          notes: string | null
+          season: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          category: string
+          color?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          notes?: string | null
+          season?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          color?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          notes?: string | null
+          season?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      for_you_recs: {
+        Row: {
+          created_at: string
+          generated_at: string
+          id: string
+          recs: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          recs: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          recs?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      plan_days: {
+        Row: {
+          created_at: string
+          day_date: string
+          id: string
+          occasion: string | null
+          outfit_data: Json | null
+          plan_id: string
+          weather_condition: string | null
+          weather_temp_high: number | null
+          weather_temp_low: number | null
+        }
+        Insert: {
+          created_at?: string
+          day_date: string
+          id?: string
+          occasion?: string | null
+          outfit_data?: Json | null
+          plan_id: string
+          weather_condition?: string | null
+          weather_temp_high?: number | null
+          weather_temp_low?: number | null
+        }
+        Update: {
+          created_at?: string
+          day_date?: string
+          id?: string
+          occasion?: string | null
+          outfit_data?: Json | null
+          plan_id?: string
+          weather_condition?: string | null
+          weather_temp_high?: number | null
+          weather_temp_low?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_days_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          currency: string
+          id: string
+          image: string | null
+          link: string
+          price: number | null
+          retailer: string | null
+          source_query: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          image?: string | null
+          link: string
+          price?: number | null
+          retailer?: string | null
+          source_query?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          image?: string | null
+          link?: string
+          price?: number | null
+          retailer?: string | null
+          source_query?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      style_profiles: {
+        Row: {
+          ab_choices: number[] | null
+          ai_keywords: string[] | null
+          ai_silhouettes: string[] | null
+          ai_style_brief: string | null
+          body_input_method: string | null
+          budget_max: number | null
+          budget_min: number | null
+          category_budgets: Json | null
+          created_at: string
+          height_inches: number | null
+          id: string
+          manual_measurements: Json | null
+          occasions: string[] | null
+          selected_visual_cues: string[] | null
+          shopping_preference: string | null
+          silhouette_type: string | null
+          updated_at: string
+          user_id: string
+          vibe_description: string | null
+        }
+        Insert: {
+          ab_choices?: number[] | null
+          ai_keywords?: string[] | null
+          ai_silhouettes?: string[] | null
+          ai_style_brief?: string | null
+          body_input_method?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          category_budgets?: Json | null
+          created_at?: string
+          height_inches?: number | null
+          id?: string
+          manual_measurements?: Json | null
+          occasions?: string[] | null
+          selected_visual_cues?: string[] | null
+          shopping_preference?: string | null
+          silhouette_type?: string | null
+          updated_at?: string
+          user_id: string
+          vibe_description?: string | null
+        }
+        Update: {
+          ab_choices?: number[] | null
+          ai_keywords?: string[] | null
+          ai_silhouettes?: string[] | null
+          ai_style_brief?: string | null
+          body_input_method?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          category_budgets?: Json | null
+          created_at?: string
+          height_inches?: number | null
+          id?: string
+          manual_measurements?: Json | null
+          occasions?: string[] | null
+          selected_visual_cues?: string[] | null
+          shopping_preference?: string | null
+          silhouette_type?: string | null
+          updated_at?: string
+          user_id?: string
+          vibe_description?: string | null
+        }
+        Relationships: []
+      }
+      weekly_plans: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          id?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
