@@ -151,6 +151,72 @@ export type Database = {
         }
         Relationships: []
       }
+      rec_dismissals: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          product_link: string
+          product_title: string | null
+          retailer: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          product_link: string
+          product_title?: string | null
+          retailer?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          product_link?: string
+          product_title?: string | null
+          retailer?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rec_impressions: {
+        Row: {
+          category: string
+          generation_id: string
+          id: string
+          price: number | null
+          product_link: string
+          product_title: string | null
+          retailer: string | null
+          shown_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          generation_id: string
+          id?: string
+          price?: number | null
+          product_link: string
+          product_title?: string | null
+          retailer?: string | null
+          shown_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          generation_id?: string
+          id?: string
+          price?: number | null
+          product_link?: string
+          product_title?: string | null
+          retailer?: string | null
+          shown_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       saved_items: {
         Row: {
           category: string | null
