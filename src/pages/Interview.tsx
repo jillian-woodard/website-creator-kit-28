@@ -68,6 +68,7 @@ const Interview = () => {
         category_budgets: enabled.length > 0 ? (Object.fromEntries(enabled) as any) : null,
         budget_min: overallMin,
         budget_max: overallMax,
+        recalibration_cadence: data.recalibrationCadence ?? null,
       };
 
       // Upsert the raw interview inputs first
@@ -239,7 +240,7 @@ const Interview = () => {
       {/* Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border">
         <div className="container mx-auto px-6 py-4 flex justify-end gap-3">
-          {step !== 2 && step !== 3 && step !== 5 && (
+          {step !== 2 && step !== 3 && step !== 5 && step !== 6 && (
             <Button
               variant="outline"
               size="lg"
