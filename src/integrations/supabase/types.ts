@@ -211,6 +211,7 @@ export type Database = {
           id: string
           manual_measurements: Json | null
           occasions: string[] | null
+          recalibration_cadence: string | null
           selected_visual_cues: string[] | null
           shopping_preference: string | null
           silhouette_type: string | null
@@ -232,6 +233,7 @@ export type Database = {
           id?: string
           manual_measurements?: Json | null
           occasions?: string[] | null
+          recalibration_cadence?: string | null
           selected_visual_cues?: string[] | null
           shopping_preference?: string | null
           silhouette_type?: string | null
@@ -253,6 +255,7 @@ export type Database = {
           id?: string
           manual_measurements?: Json | null
           occasions?: string[] | null
+          recalibration_cadence?: string | null
           selected_visual_cues?: string[] | null
           shopping_preference?: string | null
           silhouette_type?: string | null
