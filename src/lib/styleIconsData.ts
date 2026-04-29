@@ -43,7 +43,7 @@ export const styleIcons: StyleIcon[] = [
   { id: "maysa1", name: "Maysa Shems", from: "Nigeria / USA", img: maysaImg1, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/maysashems" },
   { id: "maryann", name: "Maryann Santos", from: "USA", img: maryannImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/styleby.ms" },
   { id: "hannah", name: "Hannah Harrell", from: "USA", img: hannahImg, category: "Classic & Tailored", instagram: "https://instagram.com/hannahharrell_", ltk: "https://www.shopltk.com/explore/hannahharrell_" },
-  { id: "skylar", name: "Skylar Marshai", from: "USA", img: skylarImg, category: "Red Carpet & Editorial", instagram: "https://www.instagram.com/skylarmarshai/" },
+  { id: "skylar", name: "Skylar Marshai", from: "USA", img: skylarImg, category: "Streetwear & Casual", instagram: "https://www.instagram.com/skylarmarshai/" },
   { id: "teaira", name: "Teaira Walker", from: "USA", img: teairaImg, category: "Streetwear & Casual", instagram: "https://www.instagram.com/teairawalker/" },
 ];
 
