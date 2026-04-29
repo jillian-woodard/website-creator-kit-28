@@ -171,11 +171,13 @@ const ForYou = () => {
       await supabase
         .from("for_you_recs")
         .upsert(
-          {
-            user_id: user.id,
-            recs: { categories: newRecs },
-            generated_at: data.generatedAt,
-          },
+          [
+            {
+              user_id: user.id,
+              recs: { categories: newRecs } as any,
+              generated_at: data.generatedAt,
+            },
+          ],
           { onConflict: "user_id" }
         );
 
