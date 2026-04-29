@@ -7,6 +7,7 @@ export interface CategoryBudget {
 }
 
 export type ShoppingPreference = "mens" | "womens" | "nonbinary" | "both";
+export type RecalibrationCadence = "weekly" | "monthly" | "quarterly" | "never";
 
 export interface StyleData {
   vibeDescription: string;
@@ -22,6 +23,7 @@ export interface StyleData {
   abChoices: number[];
   occasions: string[];
   categoryBudgets: Record<string, CategoryBudget>;
+  recalibrationCadence: RecalibrationCadence | null;
   profileGenerated: boolean;
 }
 
@@ -56,6 +58,7 @@ const defaultData: StyleData = {
   abChoices: [],
   occasions: [],
   categoryBudgets: defaultCategoryBudgets,
+  recalibrationCadence: null,
   profileGenerated: false,
 };
 

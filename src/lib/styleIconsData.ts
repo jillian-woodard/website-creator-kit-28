@@ -13,6 +13,8 @@ import maysaImg1 from "@/assets/maysa-shems-1.png";
 import hannahImg from "@/assets/hannah-harrell.png";
 import lawrenceImg from "@/assets/lawrence-schlossman.png";
 import maryannImg from "@/assets/maryann-santos.png";
+import skylarImg from "@/assets/skylar-marshai.jpg";
+import teairaImg from "@/assets/teaira-walker.jpg";
 
 export interface StyleIcon {
   id: string;
@@ -41,6 +43,8 @@ export const styleIcons: StyleIcon[] = [
   { id: "maysa1", name: "Maysa Shems", from: "Nigeria / USA", img: maysaImg1, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/maysashems" },
   { id: "maryann", name: "Maryann Santos", from: "USA", img: maryannImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/styleby.ms" },
   { id: "hannah", name: "Hannah Harrell", from: "USA", img: hannahImg, category: "Classic & Tailored", instagram: "https://instagram.com/hannahharrell_", ltk: "https://www.shopltk.com/explore/hannahharrell_" },
+  { id: "skylar", name: "Skylar Marshai", from: "USA", img: skylarImg, category: "Red Carpet & Editorial", instagram: "https://www.instagram.com/skylarmarshai/" },
+  { id: "teaira", name: "Teaira Walker", from: "USA", img: teairaImg, category: "Streetwear & Casual", instagram: "https://www.instagram.com/teairawalker/" },
 ];
 
 export const categories = ["Streetwear & Casual", "Red Carpet & Editorial", "Classic & Tailored", "Avant-Garde & Eclectic"];

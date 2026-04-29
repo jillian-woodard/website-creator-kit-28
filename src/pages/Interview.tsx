@@ -11,10 +11,11 @@ import ShoppingPreferenceStep from "@/components/interview/ShoppingPreferenceSte
 import OccasionsStep from "@/components/interview/OccasionsStep";
 import ABStep from "@/components/interview/ABStep";
 import BudgetStep from "@/components/interview/BudgetStep";
+import RecalibrationStep from "@/components/interview/RecalibrationStep";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-const STEPS = ["Vibe", "Visual Cues", "Body", "Shopping", "Occasions", "Budget"];
+const STEPS = ["Visual Cues", "Vibe", "Body", "Shopping", "Occasions", "Budget", "Recalibrate"];
 
 const Interview = () => {
   const [step, setStep] = useState(0);
@@ -30,12 +31,13 @@ const Interview = () => {
     Object.entries(data.categoryBudgets ?? {}).filter(([, b]) => b?.enabled);
 
   const canProceed = () => {
-    if (step === 0) return data.vibeDescription.trim().length > 0;
-    if (step === 1) return data.selectedVisualCues.length > 0;
+    if (step === 0) return data.selectedVisualCues.length > 0;
+    if (step === 1) return data.vibeDescription.trim().length > 0;
     if (step === 2) return data.bodyInputMethod !== null && data.heightInches !== null;
     if (step === 3) return data.shoppingPreference !== null;
     if (step === 4) return (data.occasions?.length ?? 0) > 0;
     if (step === 5) return enabledBudgets().length > 0;
+    if (step === 6) return data.recalibrationCadence !== null;
     return true;
   };
 
@@ -66,6 +68,7 @@ const Interview = () => {
         category_budgets: enabled.length > 0 ? (Object.fromEntries(enabled) as any) : null,
         budget_min: overallMin,
         budget_max: overallMax,
+        recalibration_cadence: data.recalibrationCadence ?? null,
       };
 
       // Upsert the raw interview inputs first
@@ -224,19 +227,20 @@ const Interview = () => {
       {/* Content */}
       <main className="pt-24 pb-32 container mx-auto px-6 lg:px-16 max-w-3xl">
         <div className="animate-fade-in-up" key={step}>
-          {step === 0 && <VibeStep />}
-          {step === 1 && <VisualCuesStep />}
+          {step === 0 && <VisualCuesStep />}
+          {step === 1 && <VibeStep />}
           {step === 2 && <BodyStep />}
           {step === 3 && <ShoppingPreferenceStep />}
           {step === 4 && <OccasionsStep />}
           {step === 5 && <BudgetStep />}
+          {step === 6 && <RecalibrationStep />}
         </div>
       </main>
 
       {/* Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border">
         <div className="container mx-auto px-6 py-4 flex justify-end gap-3">
-          {step !== 2 && step !== 3 && step !== 5 && (
+          {step !== 2 && step !== 3 && step !== 5 && step !== 6 && (
             <Button
               variant="outline"
               size="lg"
