@@ -6,95 +6,82 @@
 
 @layer base {
   :root {
-    /* Soft cream background: #F5F2ED */
-    --background: 34 23% 94%;
-    /* Deep espresso foreground: #3B302A */
-    --foreground: 22 18% 20%;
+    /* Warm off-white base: #FDFAF7 */
+    --background: 30 55% 98%;
+    /* Warm near-black: #1A1208 */
+    --foreground: 34 53% 7%;
 
-    /* Warm taupe card: #C8BFB6 lightened for card bg → using a lighter cream */
-    --card: 34 18% 90%;
-    --card-foreground: 22 18% 20%;
+    /* Slightly warmer off-white for cards: #FFF8F5 */
+    --card: 18 100% 98%;
+    --card-foreground: 34 53% 7%;
 
-    --popover: 34 18% 90%;
-    --popover-foreground: 22 18% 20%;
+    --popover: 18 100% 98%;
+    --popover-foreground: 34 53% 7%;
 
-    /* Deep espresso as primary: #3B302A */
-    --primary: 22 18% 20%;
-    --primary-foreground: 34 23% 94%;
+    /* Tangerine primary: #FF5F1F */
+    --primary: 17 100% 56%;
+    --primary-foreground: 18 100% 98%;
 
-    /* Warm taupe secondary: #C8BFB6 */
-    --secondary: 27 12% 75%;
-    --secondary-foreground: 22 18% 20%;
+    /* Muted warm gray for secondary text: #7A6E60 */
+    --secondary: 32 12% 43%;
+    --secondary-foreground: 18 100% 98%;
 
-    /* Muted: between cream and taupe */
-    --muted: 30 15% 88%;
-    --muted-foreground: 22 10% 45%;
+    /* Light warm muted backgrounds */
+    --muted: 36 20% 93%;
+    --muted-foreground: 32 12% 43%;
 
-    /* Accent: espresso */
-    --accent: 22 18% 20%;
-    --accent-foreground: 34 23% 94%;
+    /* Tangerine accent */
+    --accent: 17 100% 56%;
+    --accent-foreground: 18 100% 98%;
 
     --destructive: 0 84% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border: warm taupe #C8BFB6 */
-    --border: 27 12% 78%;
-    --input: 27 12% 78%;
-    --ring: 22 18% 20%;
+    /* Warm light border: #EDE8E0 */
+    --border: 37 27% 90%;
+    --input: 37 27% 90%;
+    --ring: 17 100% 56%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 34 20% 92%;
-    --sidebar-foreground: 22 18% 20%;
-    --sidebar-primary: 22 18% 20%;
-    --sidebar-primary-foreground: 34 23% 94%;
-    --sidebar-accent: 30 15% 88%;
-    --sidebar-accent-foreground: 22 18% 20%;
-    --sidebar-border: 27 12% 78%;
-    --sidebar-ring: 22 18% 20%;
-
-    /* Custom tokens */
-    --warm-cream: 34 23% 94%;
-    --warm-ivory: 34 18% 90%;
-    --gold: 27 12% 75%;
-    --gold-soft: 27 10% 65%;
-    /* Muted charcoal: #2F2F2F */
-    --charcoal: 0 0% 18%;
-    --charcoal-light: 22 10% 45%;
-    --blush: 12 30% 65%;
-    --sage: 155 15% 50%;
-    --terracotta: 15 40% 45%;
+    --sidebar-background: 30 55% 98%;
+    --sidebar-foreground: 34 53% 7%;
+    --sidebar-primary: 17 100% 56%;
+    --sidebar-primary-foreground: 18 100% 98%;
+    --sidebar-accent: 36 20% 93%;
+    --sidebar-accent-foreground: 34 53% 7%;
+    --sidebar-border: 37 27% 90%;
+    --sidebar-ring: 17 100% 56%;
   }
 
   .dark {
-    /* Dark mode: flip to espresso/charcoal bg with cream text */
-    --background: 0 0% 18%;
-    --foreground: 34 23% 94%;
-    --card: 22 18% 20%;
-    --card-foreground: 34 23% 94%;
-    --popover: 22 18% 20%;
-    --popover-foreground: 34 23% 94%;
-    --primary: 34 23% 94%;
-    --primary-foreground: 22 18% 20%;
-    --secondary: 27 12% 30%;
-    --secondary-foreground: 34 23% 94%;
-    --muted: 22 10% 25%;
-    --muted-foreground: 27 12% 60%;
-    --accent: 34 23% 94%;
-    --accent-foreground: 22 18% 20%;
+    --background: 34 53% 5%;
+    --foreground: 30 55% 97%;
+    --card: 34 30% 8%;
+    --card-foreground: 30 55% 97%;
+    --popover: 34 30% 8%;
+    --popover-foreground: 30 55% 97%;
+    --primary: 17 100% 56%;
+    --primary-foreground: 18 100% 98%;
+    --secondary: 32 12% 60%;
+    --secondary-foreground: 30 55% 97%;
+    --muted: 34 20% 14%;
+    --muted-foreground: 32 12% 60%;
+    --accent: 17 100% 56%;
+    --accent-foreground: 18 100% 98%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
-    --border: 22 10% 28%;
-    --input: 22 10% 28%;
-    --ring: 34 23% 94%;
-    --sidebar-background: 0 0% 16%;
-    --sidebar-foreground: 34 23% 94%;
-    --sidebar-primary: 34 23% 94%;
-    --sidebar-primary-foreground: 22 18% 20%;
-    --sidebar-accent: 22 10% 25%;
-    --sidebar-accent-foreground: 34 23% 94%;
-    --sidebar-border: 22 10% 28%;
-    --sidebar-ring: 34 23% 94%;
+    --border: 34 20% 18%;
+    --input: 34 20% 18%;
+    --ring: 17 100% 56%;
+    --sidebar-background: 34 53% 4%;
+    --sidebar-foreground: 30 55% 97%;
+    --sidebar-primary: 17 100% 56%;
+    --sidebar-primary-foreground: 18 100% 98%;
+    --sidebar-accent: 34 20% 14%;
+    --sidebar-accent-foreground: 30 55% 97%;
+    --sidebar-border: 34 20% 18%;
+    --sidebar-ring: 17 100% 56%;
   }
 }
 

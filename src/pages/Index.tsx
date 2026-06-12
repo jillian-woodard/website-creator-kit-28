@@ -21,11 +21,6 @@ const EXPLORE_ITEMS = [
 const Index = () => {
   const navigate = useNavigate();
 
-  const img = (id: string) => styleIcons.find((i) => i.id === id)?.img;
-
-  const heroB = img("rihanna");
-  const heroC = img("timothee");
-
   // Marquee row — duplicated for seamless loop
   const marqueeIcons = [...styleIcons, ...styleIcons];
 
@@ -42,7 +37,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs font-sans uppercase tracking-[0.2em] rounded-none gap-1.5"
+                className="text-xs font-sans uppercase tracking-[0.2em] rounded-none gap-1.5 text-foreground hover:text-foreground/70"
               >
                 Explore
                 <ChevronDown className="w-3 h-3" />
@@ -75,142 +70,57 @@ const Index = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/auth")}
-            className="text-xs font-sans uppercase tracking-[0.2em] rounded-none"
+            className="text-xs font-sans uppercase tracking-[0.2em] rounded-none text-foreground hover:text-foreground/70"
           >
             Sign In
           </Button>
           <Button
             size="sm"
-            onClick={() => navigate("/auth?mode=signup")}
+            onClick={() => navigate("/interview")}
             className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-sans uppercase tracking-[0.2em] rounded-none px-4"
           >
-            Sign Up
+            Start Free
           </Button>
         </div>
       </header>
 
-      {/* HERO — two column editorial, viewport-contained */}
-      <section className="relative min-h-screen bg-background pt-24 md:pt-32 pb-12 px-6 lg:px-16 overflow-hidden">
-        <div className="max-w-7xl mx-auto min-h-[calc(100vh-9rem)] md:min-h-[calc(100vh-11rem)] grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-8 lg:gap-16 items-center">
-          {/* Left */}
-          <div className="min-w-0 max-w-full overflow-hidden space-y-6">
-            <h1
-              className="font-serif font-extrabold tracking-tight text-foreground leading-[0.95] text-4xl sm:text-5xl md:text-6xl lg:text-6xl pr-4 hyphens-none break-normal"
-              style={{ wordBreak: "normal", overflowWrap: "normal", hyphens: "none" }}
-            >
-              Style is a conversation before it&apos;s a wardrobe.
-            </h1>
-            <p className="text-lg md:text-xl font-sans font-light text-muted-foreground max-w-xl leading-snug">
-              Built around your taste, your budget, and your silhouette.
-            </p>
-            <div>
-              <Button
-                size="lg"
-                onClick={() => navigate("/interview")}
-                className="bg-foreground text-background hover:bg-foreground/90 px-8 py-6 text-xs font-sans font-semibold uppercase tracking-[0.25em] gap-3 group rounded-none"
-              >
-                Start Your Style Interview
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Right — two-image editorial composition (desktop) */}
-          <div className="relative hidden md:block min-h-[52vh] lg:min-h-[60vh]">
-            {/* Image B — anchor, flush right top */}
-            {heroB && (
-              <div className="absolute top-0 right-0 w-[65%] aspect-[3/4] max-h-[52vh] overflow-hidden bg-card">
-                <img
-                  src={heroB}
-                  alt=""
-                  className="w-full h-full object-cover object-top"
-                  loading="eager"
-                />
-              </div>
-            )}
-
-            {/* Image C — small detail crop, bottom-left accent */}
-            {heroC && (
-              <div className="absolute bottom-0 left-0 w-[40%] aspect-[4/5] max-h-[36vh] overflow-hidden bg-card z-10">
-                <img
-                  src={heroC}
-                  alt=""
-                  className="w-full h-full object-cover object-top"
-                  loading="lazy"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Mobile — single full-bleed anchor image */}
-          {heroB && (
-            <div className="md:hidden -mx-6 aspect-[4/5] overflow-hidden bg-card">
-              <img
-                src={heroB}
-                alt=""
-                className="w-full h-full object-cover object-top"
-                loading="lazy"
-              />
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* STYLE ICONS — looping marquee */}
-      <section className="py-16 md:py-24 bg-background border-y border-border overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-16 mb-10 md:mb-14">
-          <h2 className="font-serif font-extrabold text-foreground leading-[0.95] tracking-tight text-3xl md:text-4xl lg:text-5xl max-w-3xl">
-            Styles we love.
-          </h2>
-        </div>
-
-        <div
-          className="relative w-full"
-          style={{
-            maskImage:
-              "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-          }}
+      {/* HERO — full-bleed centered */}
+      <section className="min-h-screen bg-background flex flex-col items-center justify-center px-6 lg:px-16 text-center pt-20">
+        <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary mb-6">
+          AI Style Companion
+        </p>
+        <h1
+          className="font-serif font-extrabold tracking-tight text-foreground leading-[0.95] text-5xl sm:text-6xl md:text-7xl lg:text-8xl max-w-4xl hyphens-none"
+          style={{ wordBreak: "normal", overflowWrap: "normal", hyphens: "none" }}
         >
-          <div className="flex gap-6 w-max animate-marquee">
-            {marqueeIcons.map((icon, idx) => (
-              <figure
-                key={`${icon.id}-${idx}`}
-                className="flex-shrink-0 w-44 md:w-56"
-              >
-                <div className="aspect-[3/4] overflow-hidden bg-card">
-                  <img
-                    src={icon.img}
-                    alt={icon.name}
-                    className="w-full h-full object-cover object-top"
-                    loading="lazy"
-                  />
-                </div>
-                <figcaption className="pt-3">
-                  <p className="font-serif font-bold text-foreground text-sm md:text-base leading-tight">
-                    {icon.name}
-                  </p>
-                  <p className="text-[10px] md:text-xs font-sans uppercase tracking-[0.2em] text-muted-foreground mt-1">
-                    {icon.from}
-                  </p>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+          Look Like Who You're Becoming.
+        </h1>
+        <p className="text-base md:text-lg font-sans font-light text-muted-foreground max-w-md leading-relaxed mt-8">
+          A 7-minute style interview. A profile built around your body, life, and vision.
+        </p>
+        <div className="flex flex-col items-center gap-3 mt-10">
+          <Button
+            size="lg"
+            onClick={() => navigate("/interview")}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-6 text-xs font-sans font-semibold uppercase tracking-[0.25em] gap-3 group rounded-none"
+          >
+            Take the Style Interview
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Button>
+          <p className="text-xs text-muted-foreground font-sans">Free · No account needed</p>
         </div>
       </section>
 
-      {/* HOW IT WORKS — typographic, no images */}
+      {/* HOW IT WORKS */}
       <section className="py-20 md:py-32 bg-card border-y border-border">
         <div className="max-w-7xl mx-auto px-6 lg:px-16">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16 md:mb-20 gap-6">
             <div>
-              <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary/70 mb-4">
-                Fig. 01 — How It Works
+              <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary mb-4">
+                How It Works
               </p>
               <h2 className="font-serif font-extrabold uppercase text-foreground leading-[0.88] tracking-tighter text-4xl md:text-6xl lg:text-7xl">
-                Three steps. <span className="italic font-medium normal-case lowercase">That&apos;s it.</span>
+                Three steps. <span className="italic font-medium normal-case lowercase">That's it.</span>
               </h2>
             </div>
             <p className="text-muted-foreground font-sans text-sm md:text-base max-w-sm">
@@ -254,24 +164,72 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA — loud, but pulled back */}
-      <section className="py-24 md:py-40 bg-primary relative overflow-hidden">
-        <div className="max-w-5xl mx-auto px-6 lg:px-16 text-center relative z-10">
-          <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary-foreground/60 mb-8">
-            Fig. 03 — Your Turn
+      {/* STYLE ICONS — looping marquee */}
+      <section className="py-16 md:py-24 bg-background border-b border-border overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-16 mb-10 md:mb-14">
+          <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary mb-4">
+            Inspiration
           </p>
-          <h2 className="font-serif font-extrabold uppercase text-primary-foreground leading-[0.88] tracking-tighter text-5xl md:text-7xl mb-10">
-            Ready to lock in <span className="italic font-medium normal-case lowercase">your look?</span>
+          <h2 className="font-serif font-extrabold text-foreground leading-[0.95] tracking-tight text-3xl md:text-4xl lg:text-5xl max-w-3xl">
+            Styles we love.
           </h2>
-          <p className="text-primary-foreground/70 font-sans mb-12 max-w-md mx-auto text-base md:text-lg">
+        </div>
+
+        <div
+          className="relative w-full"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+          }}
+        >
+          <div className="flex gap-6 w-max animate-marquee">
+            {marqueeIcons.map((icon, idx) => (
+              <figure
+                key={`${icon.id}-${idx}`}
+                className="flex-shrink-0 w-44 md:w-56"
+              >
+                <div className="aspect-[3/4] overflow-hidden bg-card">
+                  <img
+                    src={icon.img}
+                    alt={icon.name}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
+                </div>
+                <figcaption className="pt-3">
+                  <p className="font-serif font-bold text-foreground text-sm md:text-base leading-tight">
+                    {icon.name}
+                  </p>
+                  <p className="text-[10px] md:text-xs font-sans uppercase tracking-[0.2em] text-muted-foreground mt-1">
+                    {icon.from}
+                  </p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA — dark close */}
+      <section className="py-24 md:py-40 bg-foreground relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 lg:px-16 text-center relative z-10">
+          <p className="text-[10px] md:text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary mb-8">
+            Your Turn
+          </p>
+          <h2 className="font-serif font-extrabold uppercase text-background leading-[0.88] tracking-tighter text-5xl md:text-7xl mb-10">
+            Your style era <span className="italic font-medium normal-case lowercase">starts now.</span>
+          </h2>
+          <p className="text-background/60 font-sans mb-12 max-w-md mx-auto text-base md:text-lg">
             Five minutes. Walk away with a style profile and fits you can actually buy.
           </p>
           <Button
             size="lg"
             onClick={() => navigate("/interview")}
-            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 px-12 py-7 text-xs font-sans font-semibold uppercase tracking-[0.25em] gap-3 group rounded-none"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-7 text-xs font-sans font-semibold uppercase tracking-[0.25em] gap-3 group rounded-none"
           >
-            Start the Quiz
+            Take the Style Interview
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
