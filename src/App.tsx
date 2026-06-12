@@ -14,6 +14,7 @@ import Planner from "./pages/Planner.tsx";
 import Guide from "./pages/Guide.tsx";
 import ForYou from "./pages/ForYou.tsx";
 import About from "./pages/About.tsx";
+import Pricing from "./pages/Pricing.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/interview" element={<Interview />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/about" element={<About />} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/closet" element={<ProtectedRoute><Closet /></ProtectedRoute>} />
               <Route path="/planner" element={<ProtectedRoute><Planner /></ProtectedRoute>} />
