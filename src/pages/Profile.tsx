@@ -155,15 +155,19 @@ const Profile = () => {
     loadProfile();
   }, [user]);
 
-  // Merge: DB profile takes priority, fall back to context, then defaults
+  // Merge: DB profile takes priority, fall back to context AI results, then defaults
   const vibeDescription = dbProfile?.vibe_description || contextData.vibeDescription || "";
-  const keywords = dbProfile?.ai_keywords?.length ? dbProfile.ai_keywords : (contextData.selectedVisualCues.length > 0 ? contextData.selectedVisualCues : fallbackKeywords);
-  const silhouettes = dbProfile?.ai_silhouettes?.length ? dbProfile.ai_silhouettes : fallbackSilhouettes;
-  const brief = dbProfile?.ai_style_brief || fallbackBrief;
+  const keywords = dbProfile?.ai_keywords?.length ? dbProfile.ai_keywords :
+    (contextData.aiKeywords?.length ? contextData.aiKeywords :
+      (contextData.selectedVisualCues.length > 0 ? contextData.selectedVisualCues : fallbackKeywords));
+  const silhouettes = dbProfile?.ai_silhouettes?.length ? dbProfile.ai_silhouettes :
+    (contextData.aiSilhouettes?.length ? contextData.aiSilhouettes : fallbackSilhouettes);
+  const brief = dbProfile?.ai_style_brief || contextData.aiStyleBrief || fallbackBrief;
   const silhouetteType = dbProfile?.silhouette_type || contextData.silhouetteType || "";
   const budgetMin = dbProfile?.budget_min ?? contextData.budgetMin ?? 50;
   const budgetMax = dbProfile?.budget_max ?? contextData.budgetMax ?? 500;
   const visualCues = dbProfile?.selected_visual_cues?.length ? dbProfile.selected_visual_cues : contextData.selectedVisualCues;
+  const isGuest = !user && contextData.profileGenerated;
 
   if (loading) {
     return (
@@ -175,6 +179,21 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Save banner for guests */}
+      {isGuest && (
+        <div className="bg-primary text-primary-foreground px-6 py-3 flex items-center justify-between gap-4">
+          <p className="text-sm font-sans">
+            Sign in to save your style profile and unlock your closet, planner, and AI picks.
+          </p>
+          <button
+            onClick={() => navigate("/auth?next=/profile")}
+            className="text-sm font-sans font-semibold underline underline-offset-2 whitespace-nowrap hover:opacity-80 transition-opacity"
+          >
+            Sign in to save →
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">

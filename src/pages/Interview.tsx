@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useStyle } from "@/lib/styleContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import VibeStep from "@/components/interview/VibeStep";
 import VisualCuesStep from "@/components/interview/VisualCuesStep";
 import BodyStep from "@/components/interview/BodyStep";
@@ -23,8 +23,8 @@ const Interview = () => {
   const [generating, setGenerating] = useState(false);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data } = useStyle();
-  const { user, loading: authLoading } = useAuth();
+  const { data, updateData } = useStyle();
+  const { user, session, loading: authLoading } = useAuth();
   const autoFinishedRef = useRef(false);
 
   const enabledBudgets = () =>
@@ -41,11 +41,58 @@ const Interview = () => {
     return true;
   };
 
-  const saveStyleProfile = async () => {
-    if (!user) {
-      navigate("/auth?next=" + encodeURIComponent("/interview?finish=1"));
-      return;
+  // Step 1: Generate AI results and show them — no auth required
+  const generateAndPreview = async () => {
+    setGenerating(true);
+    try {
+      const enabled = enabledBudgets();
+      const mins = enabled.map(([, b]) => b.min);
+      const maxes = enabled.map(([, b]) => b.max);
+      const overallMin = mins.length > 0 ? Math.min(...mins) : data.budgetMin;
+      const overallMax = maxes.length > 0 ? Math.max(...maxes) : data.budgetMax;
+
+      const { data: aiResult, error: aiError } = await supabase.functions.invoke(
+        "generate-style-profile",
+        {
+          body: {
+            vibeDescription: data.vibeDescription,
+            selectedVisualCues: data.selectedVisualCues,
+            bodyInputMethod: data.bodyInputMethod,
+            silhouetteType: data.silhouetteType,
+            manualMeasurements: data.manualMeasurements,
+            heightInches: data.heightInches,
+            shoppingPreference: data.shoppingPreference,
+            abChoices: data.abChoices,
+            occasions: data.occasions,
+            categoryBudgets: enabled.length > 0 ? Object.fromEntries(enabled) : null,
+            budgetMin: overallMin,
+            budgetMax: overallMax,
+          },
+        }
+      );
+
+      if (!aiError && aiResult && !aiResult.error) {
+        updateData({
+          aiKeywords: aiResult.keywords || [],
+          aiSilhouettes: aiResult.silhouettes || [],
+          aiStyleBrief: aiResult.style_brief || "",
+          profileGenerated: true,
+        });
+      } else {
+        updateData({ profileGenerated: true });
+      }
+    } catch (err) {
+      console.error("Failed to generate style profile:", err);
+      updateData({ profileGenerated: true });
+    } finally {
+      setGenerating(false);
+      navigate("/profile");
     }
+  };
+
+  // Step 2: Save to DB — called after sign-in or when logged-in user wants to persist
+  const saveProfileToDb = async () => {
+    if (!user) return;
     setSaving(true);
     try {
       const enabled = enabledBudgets();
@@ -69,16 +116,16 @@ const Interview = () => {
         budget_min: overallMin,
         budget_max: overallMax,
         recalibration_cadence: data.recalibrationCadence ?? null,
+        ai_keywords: data.aiKeywords?.length ? data.aiKeywords : null,
+        ai_silhouettes: data.aiSilhouettes?.length ? data.aiSilhouettes : null,
+        ai_style_brief: data.aiStyleBrief || null,
       };
 
-      // Upsert the raw interview inputs first
       const { data: existing } = await supabase
         .from("style_profiles")
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
-
-      let profileId: string | undefined = existing?.id;
 
       if (existing) {
         await supabase
@@ -86,74 +133,21 @@ const Interview = () => {
           .update({ ...profileData, updated_at: new Date().toISOString() })
           .eq("id", existing.id);
       } else {
-        const { data: inserted } = await supabase
-          .from("style_profiles")
-          .insert(profileData)
-          .select("id")
-          .single();
-        profileId = inserted?.id;
+        await supabase.from("style_profiles").insert(profileData);
       }
 
-      setSaving(false);
-      setGenerating(true);
-
-      // Call the AI to generate the real profile
-      const { data: aiResult, error: aiError } = await supabase.functions.invoke(
-        "generate-style-profile",
-        {
-          body: {
-            vibeDescription: data.vibeDescription,
-            selectedVisualCues: data.selectedVisualCues,
-            bodyInputMethod: data.bodyInputMethod,
-            silhouetteType: data.silhouetteType,
-            manualMeasurements: data.manualMeasurements,
-            heightInches: data.heightInches,
-            shoppingPreference: data.shoppingPreference,
-            abChoices: data.abChoices,
-            occasions: data.occasions,
-            categoryBudgets: profileData.category_budgets,
-            budgetMin: profileData.budget_min,
-            budgetMax: profileData.budget_max,
-          },
-        }
-      );
-
-      if (aiError || !aiResult || aiResult.error) {
-        console.error("AI generation failed:", aiError || aiResult?.error);
-        toast({
-          title: "Profile saved, AI generation skipped",
-          description: "We'll show you your inputs. You can regenerate from your profile page.",
-          variant: "destructive",
-        });
-      } else if (profileId) {
-        // Persist AI outputs back to the same row
-        await supabase
-          .from("style_profiles")
-          .update({
-            ai_keywords: aiResult.keywords || null,
-            ai_silhouettes: aiResult.silhouettes || null,
-            ai_style_brief: aiResult.style_brief || null,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", profileId);
-      }
+      toast("Profile saved!");
     } catch (err) {
       console.error("Failed to save style profile:", err);
-      toast({
-        title: "Could not save profile",
-        description: "Your results are still shown below.",
-        variant: "destructive",
-      });
+      toast("Could not save profile.");
     } finally {
       setSaving(false);
-      setGenerating(false);
-      navigate("/profile");
     }
   };
 
   const next = () => {
     if (step < STEPS.length - 1) setStep(step + 1);
-    else saveStyleProfile();
+    else generateAndPreview();
   };
 
   const back = () => {
@@ -162,21 +156,6 @@ const Interview = () => {
   };
 
   const isWorking = saving || generating;
-
-  // After returning from /auth with ?finish=1, auto-resume saving the profile.
-  useEffect(() => {
-    if (authLoading) return;
-    if (autoFinishedRef.current) return;
-    if (searchParams.get("finish") !== "1") return;
-    if (!user) return;
-    // Need the in-memory interview data to still be present.
-    if (!data.vibeDescription) return;
-    autoFinishedRef.current = true;
-    // Strip the query param so refreshes don't loop.
-    setSearchParams({}, { replace: true });
-    saveStyleProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user, searchParams]);
 
 
   // Full-screen loading state while the AI runs

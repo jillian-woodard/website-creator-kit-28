@@ -25,6 +25,9 @@ export interface StyleData {
   categoryBudgets: Record<string, CategoryBudget>;
   recalibrationCadence: RecalibrationCadence | null;
   profileGenerated: boolean;
+  aiKeywords: string[];
+  aiSilhouettes: string[];
+  aiStyleBrief: string;
 }
 
 export const SHOPPING_CATEGORIES = [
@@ -60,6 +63,9 @@ const defaultData: StyleData = {
   categoryBudgets: defaultCategoryBudgets,
   recalibrationCadence: null,
   profileGenerated: false,
+  aiKeywords: [],
+  aiSilhouettes: [],
+  aiStyleBrief: "",
 };
 
 interface StyleContextType {
