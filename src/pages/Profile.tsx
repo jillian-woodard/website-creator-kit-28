@@ -21,7 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const PUBLIC_URL = "https://crafting-joyful-apps.lovable.app";
+const PUBLIC_URL = "https://figure-ai-stylist.vercel.app";
 
 interface DbStyleProfile {
   vibe_description: string | null;
@@ -86,9 +86,39 @@ const Profile = () => {
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) {
+        // Guest: generate picks from context data if interview was just completed
+        if (contextData.profileGenerated) {
+          setRecsLoading(true);
+          try {
+            const { data: gen, error: genErr } = await supabase.functions.invoke(
+              "generate-for-you-recs",
+              {
+                body: {
+                  styleProfile: {
+                    ai_keywords: contextData.aiKeywords,
+                    ai_style_brief: contextData.aiStyleBrief,
+                    vibe_description: contextData.vibeDescription,
+                    silhouette_type: contextData.silhouetteType,
+                    budget_min: contextData.budgetMin,
+                    budget_max: contextData.budgetMax,
+                    shopping_preference: contextData.shoppingPreference,
+                  },
+                },
+              }
+            );
+            if (!genErr && gen && !gen.error) {
+              setRecs((gen.categories || []) as CategoryRecs[]);
+            }
+          } catch (genErr) {
+            console.error("Guest rec generation failed:", genErr);
+          } finally {
+            setRecsLoading(false);
+          }
+        }
         setLoading(false);
         return;
       }
+
       try {
         const { data } = await supabase
           .from("style_profiles")
