@@ -17,6 +17,7 @@ import {
   Wand2,
   Shirt,
   AlertCircle,
+  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
@@ -303,6 +304,15 @@ const Closet = () => {
           </button>
           <span className="font-serif text-lg text-foreground">My Closet</span>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/closet/connect-email")}
+              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              Import From Email
+            </Button>
             <Button
               variant="outline"
               size="sm"

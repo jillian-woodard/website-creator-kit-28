@@ -10,6 +10,7 @@ import Interview from "./pages/Interview.tsx";
 import Profile from "./pages/Profile.tsx";
 import Auth from "./pages/Auth.tsx";
 import Closet from "./pages/Closet.tsx";
+import ConnectEmail from "./pages/ConnectEmail.tsx";
 import Planner from "./pages/Planner.tsx";
 import Guide from "./pages/Guide.tsx";
 import ForYou from "./pages/ForYou.tsx";
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/closet" element={<ProtectedRoute><Closet /></ProtectedRoute>} />
+              <Route path="/closet/connect-email" element={<ProtectedRoute><ConnectEmail /></ProtectedRoute>} />
               <Route path="/planner" element={<ProtectedRoute><Planner /></ProtectedRoute>} />
               <Route path="/guide" element={<ProtectedRoute><Guide /></ProtectedRoute>} />
               <Route path="/for-you" element={<ProtectedRoute><ForYou /></ProtectedRoute>} />

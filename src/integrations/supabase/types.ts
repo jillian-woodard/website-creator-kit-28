@@ -56,6 +56,123 @@ export type Database = {
         }
         Relationships: []
       }
+      detected_purchases: {
+        Row: {
+          brand: string | null
+          category: string | null
+          closet_item_id: string | null
+          color: string | null
+          created_at: string
+          currency: string | null
+          email_connection_id: string | null
+          gmail_message_id: string
+          id: string
+          image_url: string | null
+          item_name: string | null
+          merchant: string | null
+          price: number | null
+          purchase_date: string | null
+          raw_subject: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          closet_item_id?: string | null
+          color?: string | null
+          created_at?: string
+          currency?: string | null
+          email_connection_id?: string | null
+          gmail_message_id: string
+          id?: string
+          image_url?: string | null
+          item_name?: string | null
+          merchant?: string | null
+          price?: number | null
+          purchase_date?: string | null
+          raw_subject?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          closet_item_id?: string | null
+          color?: string | null
+          created_at?: string
+          currency?: string | null
+          email_connection_id?: string | null
+          gmail_message_id?: string
+          id?: string
+          image_url?: string | null
+          item_name?: string | null
+          merchant?: string | null
+          price?: number | null
+          purchase_date?: string | null
+          raw_subject?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "detected_purchases_closet_item_id_fkey"
+            columns: ["closet_item_id"]
+            isOneToOne: false
+            referencedRelation: "closet_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "detected_purchases_email_connection_id_fkey"
+            columns: ["email_connection_id"]
+            isOneToOne: false
+            referencedRelation: "email_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_connections: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          email_address: string | null
+          id: string
+          last_synced_at: string | null
+          provider: string
+          refresh_token: string
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          email_address?: string | null
+          id?: string
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          email_address?: string | null
+          id?: string
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       for_you_recs: {
         Row: {
           created_at: string
@@ -357,7 +474,17 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      email_connection_status: {
+        Row: {
+          created_at: string | null
+          email_address: string | null
+          id: string | null
+          last_synced_at: string | null
+          provider: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
