@@ -124,7 +124,7 @@ const Index = () => {
               </h2>
             </div>
             <p className="text-muted-foreground font-sans text-sm md:text-base max-w-sm">
-              No wardrobe audit. No selfie required. Just tell us who you want to be.
+              No wardrobe audit. No selfie. No digital twin — just tell us who you're becoming.
             </p>
           </div>
 
@@ -173,6 +173,9 @@ const Index = () => {
           <h2 className="font-serif font-extrabold text-foreground leading-[0.95] tracking-tight text-3xl md:text-4xl lg:text-5xl max-w-3xl">
             Styles we love.
           </h2>
+          <p className="text-muted-foreground font-sans text-sm md:text-base max-w-md mt-4">
+            We don't copy their fit — we translate it onto your body, your budget, your becoming.
+          </p>
         </div>
 
         <div
@@ -222,7 +225,7 @@ const Index = () => {
             Your style era <span className="italic font-medium normal-case lowercase">starts now.</span>
           </h2>
           <p className="text-background/60 font-sans mb-12 max-w-md mx-auto text-base md:text-lg">
-            Five minutes. Walk away with a style profile and fits you can actually buy.
+            Seven minutes. Walk away with a style profile and fits you can actually buy.
           </p>
           <Button
             size="lg"
