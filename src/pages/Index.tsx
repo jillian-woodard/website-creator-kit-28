@@ -12,7 +12,7 @@ import {
 const EXPLORE_ITEMS = [
   { icon: Sparkles, title: "Style Interview", desc: "Build your aesthetic identity", to: "/interview" },
   { icon: UserCircle, title: "Your Profile", desc: "Keywords, silhouettes, palette", to: "/profile" },
-  { icon: ShoppingBag, title: "Suggested Items", desc: "Picks within your budget", to: "/foryou" },
+  { icon: ShoppingBag, title: "Suggested Items", desc: "Picks within your budget", to: "/for-you" },
   { icon: Shirt, title: "Your Closet", desc: "What you already own", to: "/closet" },
   { icon: CalendarDays, title: "Your Week Ahead", desc: "Outfits planned for the week", to: "/planner" },
   { icon: Info, title: "About Us", desc: "Our mission and why we built it", to: "/about" },

@@ -63,6 +63,10 @@ serve(async (req) => {
     const silhouetteType = styleProfile.silhouetteType || styleProfile.silhouette_type || "";
     const shoppingPreference: string =
       styleProfile.shoppingPreference || styleProfile.shopping_preference || "both";
+    const occasions: string[] =
+      styleProfile.occasions || styleProfile.occasions_selected || [];
+    const visualCues: string[] =
+      styleProfile.selectedVisualCues || styleProfile.selected_visual_cues || [];
 
     const genderRule = (() => {
       switch (shoppingPreference) {
@@ -100,6 +104,8 @@ Query rules:
 - Do NOT reference body size, weight, or measurements
 - Do NOT use em dashes
 - Apply the gender modifier rule above to every query.
+- Ground queries in the occasions the user actually selected. If "Workwear" is not among their occasions, do not default to office or corporate styling, even as a "safe" choice. If they selected things like "Everyday," "Going Out," or "Loungewear," queries should reflect that instead.
+- If a named style cue or look is provided, let it meaningfully shape silhouette and styling choices in the queries, not just generic keywords.
 
 Respond with ONLY valid JSON, no preamble, no markdown, no code fences:
 {
@@ -116,7 +122,9 @@ Vibe: "${vibeDescription || "not specified"}"
 Keywords: ${keywords.length > 0 ? keywords.join(", ") : "not specified"}
 Style brief: "${styleBrief || "not specified"}"
 ${silhouetteType ? `Silhouette: ${silhouetteType}` : ""}
-Budget per piece: $${budgetMin} to $${budgetMax}${feedbackBlock}
+Budget per piece: $${budgetMin} to $${budgetMax}
+Occasions they dress for: ${occasions.length > 0 ? occasions.join(", ") : "not specified"}
+Style cues / reference looks they responded to: ${visualCues.length > 0 ? visualCues.join(", ") : "not specified"}${feedbackBlock}
 
 Generate one search query per category.`;
 

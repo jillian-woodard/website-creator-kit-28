@@ -37,6 +37,7 @@ interface DbStyleProfile {
   manual_measurements: any;
   height_inches?: number | null;
   shopping_preference?: string | null;
+  occasions?: string[] | null;
 }
 
 interface Product {
@@ -102,6 +103,8 @@ const Profile = () => {
                     budget_min: contextData.budgetMin,
                     budget_max: contextData.budgetMax,
                     shopping_preference: contextData.shoppingPreference,
+                    occasions: contextData.occasions,
+                    selected_visual_cues: contextData.selectedVisualCues,
                   },
                 },
               }
@@ -152,6 +155,8 @@ const Profile = () => {
                     budget_max: (data as any).budget_max,
                     shopping_preference: (data as any).shopping_preference,
                     height_inches: (data as any).height_inches,
+                    occasions: (data as any).occasions,
+                    selected_visual_cues: (data as any).selected_visual_cues,
                   },
                 },
               }
@@ -197,6 +202,7 @@ const Profile = () => {
   const budgetMin = dbProfile?.budget_min ?? contextData.budgetMin ?? 50;
   const budgetMax = dbProfile?.budget_max ?? contextData.budgetMax ?? 500;
   const visualCues = dbProfile?.selected_visual_cues?.length ? dbProfile.selected_visual_cues : contextData.selectedVisualCues;
+  const occasions = dbProfile?.occasions?.length ? dbProfile.occasions : contextData.occasions;
   const isGuest = !user && contextData.profileGenerated;
 
   if (loading) {
@@ -294,7 +300,7 @@ const Profile = () => {
         </div>
 
         {/* Silhouettes & Details */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="grid md:grid-cols-4 gap-8 mb-16">
           <section className="animate-fade-in-up opacity-0 animation-delay-200">
             <h2 className="text-xl font-serif text-foreground mb-4">Key Silhouettes</h2>
             <ul className="space-y-2">
@@ -318,6 +324,24 @@ const Profile = () => {
               {dbProfile?.body_input_method || contextData.bodyInputMethod || "Not specified"}
               {silhouetteType ? ` · ${silhouetteType}` : ""}
             </p>
+          </section>
+
+          <section className="animate-fade-in-up opacity-0 animation-delay-200">
+            <h2 className="text-xl font-serif text-foreground mb-4">Dressing For</h2>
+            {occasions.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {occasions.map((o) => (
+                  <span
+                    key={o}
+                    className="px-3 py-1 rounded-full border border-border text-xs font-sans text-foreground"
+                  >
+                    {o}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground font-sans">Not specified</p>
+            )}
           </section>
         </div>
 
@@ -531,7 +555,7 @@ const Profile = () => {
               </h2>
             </div>
             <button
-              onClick={() => navigate("/foryou")}
+              onClick={() => navigate("/for-you")}
               className="text-sm font-sans text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
             >
               See all picks
@@ -578,7 +602,7 @@ const Profile = () => {
               </p>
               <Button
                 variant="outline"
-                onClick={() => navigate("/foryou")}
+                onClick={() => navigate("/for-you")}
                 className="font-sans"
               >
                 Try For You

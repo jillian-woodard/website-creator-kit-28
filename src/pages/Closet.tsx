@@ -5,7 +5,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, ArrowLeft, CalendarDays, X, Upload, Sparkles, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  ArrowLeft,
+  CalendarDays,
+  X,
+  Upload,
+  Sparkles,
+  Loader2,
+  Wand2,
+  Shirt,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -13,6 +25,17 @@ type ClosetItem = Tables<"closet_items">;
 
 const CATEGORIES = ["Top", "Bottom", "Dress", "Outerwear", "Shoes", "Accessory", "Activewear"];
 const SEASONS = ["Spring", "Summer", "Fall", "Winter"];
+const MIX_OCCASIONS = ["Work", "Casual", "Date Night", "Gym", "Formal", "Brunch", "Travel", "WFH"];
+
+interface MixOutfitItem {
+  name: string;
+  category: string;
+}
+
+interface MixOutfit {
+  items: MixOutfitItem[];
+  stylingTip: string;
+}
 
 const Closet = () => {
   const { user, loading: authLoading } = useAuth();
@@ -34,6 +57,18 @@ const Closet = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  // Mix My Closet state
+  const [showMix, setShowMix] = useState(false);
+  const [mixOccasion, setMixOccasion] = useState("");
+  const [mixLoading, setMixLoading] = useState(false);
+  const [mixOutfits, setMixOutfits] = useState<MixOutfit[] | null>(null);
+  const [mixGaps, setMixGaps] = useState<string[]>([]);
+  const [styleProfile, setStyleProfile] = useState<{
+    vibeDescription: string | null;
+    keywords: string[] | null;
+    styleBrief: string | null;
+  } | null>(null);
+
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
@@ -41,7 +76,10 @@ const Closet = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (user) fetchItems();
+    if (user) {
+      fetchItems();
+      fetchStyleProfile();
+    }
   }, [user]);
 
   const fetchItems = async () => {
@@ -56,6 +94,63 @@ const Closet = () => {
     }
     setLoading(false);
   };
+
+  const fetchStyleProfile = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("style_profiles")
+      .select("vibe_description, ai_keywords, ai_style_brief")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (!error && data) {
+      setStyleProfile({
+        vibeDescription: data.vibe_description,
+        keywords: data.ai_keywords,
+        styleBrief: data.ai_style_brief,
+      });
+    }
+  };
+
+  const handleMixOutfits = async () => {
+    if (!mixOccasion || items.length < 2) return;
+    setMixLoading(true);
+    setMixOutfits(null);
+    setMixGaps([]);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-closet-outfits", {
+        body: {
+          occasion: mixOccasion,
+          closetItems: items.map((i) => ({
+            name: i.name,
+            category: i.category,
+            color: i.color,
+            brand: i.brand,
+            season: i.season,
+          })),
+          styleProfile,
+        },
+      });
+
+      if (error || !data || data.error) {
+        console.error("Mix My Closet failed:", error || data?.error);
+        toast.error("Couldn't build outfits right now. Try again in a moment.");
+        return;
+      }
+
+      setMixOutfits(data.outfits || []);
+      setMixGaps(data.gaps || []);
+      if (!data.outfits || data.outfits.length === 0) {
+        toast.info("Couldn't find enough variety in your closet for this occasion yet.");
+      }
+    } catch (err) {
+      console.error("Mix My Closet error:", err);
+      toast.error("Couldn't build outfits right now. Try again in a moment.");
+    } finally {
+      setMixLoading(false);
+    }
+  };
+
+  const findItemByName = (name: string) => items.find((i) => i.name === name);
 
   // Helper: convert a File to base64 string (without data URL prefix)
   const fileToBase64 = (file: File): Promise<{ base64: string; mediaType: string }> =>
@@ -207,15 +302,26 @@ const Closet = () => {
             Profile
           </button>
           <span className="font-serif text-lg text-foreground">My Closet</span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/planner")}
-            className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
-          >
-            <CalendarDays className="w-3.5 h-3.5" />
-            Plan Week
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowMix(!showMix)}
+              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              Mix My Closet
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/planner")}
+              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+            >
+              <CalendarDays className="w-3.5 h-3.5" />
+              Plan Week
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -237,6 +343,101 @@ const Closet = () => {
             {showAdd ? "Cancel" : "Add Item"}
           </Button>
         </div>
+
+        {/* Mix My Closet */}
+        {showMix && (
+          <div className="border border-border bg-card p-6 mb-10 space-y-4 animate-fade-in">
+            <div>
+              <h2 className="font-serif text-xl text-foreground mb-1">Mix My Closet</h2>
+              <p className="text-sm text-muted-foreground font-sans">
+                Pick an occasion and we'll put together outfits from pieces you already own. No new
+                purchases.
+              </p>
+            </div>
+
+            {items.length < 2 ? (
+              <p className="text-sm text-muted-foreground font-sans">
+                Add at least 2 items to your closet before mixing outfits.
+              </p>
+            ) : (
+              <>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Select value={mixOccasion} onValueChange={setMixOccasion}>
+                    <SelectTrigger className="rounded-none font-sans w-48">
+                      <SelectValue placeholder="Occasion" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MIX_OCCASIONS.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    onClick={handleMixOutfits}
+                    disabled={!mixOccasion || mixLoading}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+                  >
+                    {mixLoading ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Building...
+                      </>
+                    ) : (
+                      "Build Outfits"
+                    )}
+                  </Button>
+                </div>
+
+                {mixOutfits && mixOutfits.length > 0 && (
+                  <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                    {mixOutfits.map((outfit, idx) => (
+                      <div key={idx} className="border border-border p-4 space-y-3">
+                        <div className="flex flex-wrap gap-3">
+                          {outfit.items.map((outfitItem) => {
+                            const match = findItemByName(outfitItem.name);
+                            return (
+                              <div key={outfitItem.name} className="flex flex-col items-center w-16">
+                                <div className="w-16 h-16 border border-border bg-muted flex items-center justify-center overflow-hidden mb-1">
+                                  {match?.image_url ? (
+                                    <img
+                                      src={match.image_url}
+                                      alt={outfitItem.name}
+                                      className="w-full h-full object-cover"
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <Shirt className="w-5 h-5 text-muted-foreground" />
+                                  )}
+                                </div>
+                                <span className="text-[10px] text-center text-muted-foreground font-sans truncate w-full">
+                                  {outfitItem.name}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <p className="text-xs text-foreground/80 font-sans italic">{outfit.stylingTip}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {mixGaps.length > 0 && (
+                  <div className="flex items-start gap-2 pt-2 text-xs text-muted-foreground font-sans">
+                    <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                    <div className="space-y-1">
+                      {mixGaps.map((gap, idx) => (
+                        <p key={idx}>{gap}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         {/* Add Item Form */}
         {showAdd && (

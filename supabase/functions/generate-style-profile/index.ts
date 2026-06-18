@@ -49,6 +49,8 @@ serve(async (req) => {
       abChoices,
       budgetMin,
       budgetMax,
+      occasions,
+      shoppingPreference,
     } = await req.json();
 
     // Resolve A/B choices to meaningful labels instead of raw 0/1 indices
@@ -81,9 +83,9 @@ You must generate four outputs:
 
 2. SILHOUETTES: 4 to 6 specific silhouette or garment-type recommendations grounded in what will work for this person. Reference their body input if provided. Examples: "Tailored single-breasted blazers," "Wide-leg pleated trousers," "Bias-cut slip dresses," "Oversized button-down shirts," "A-line midi skirts," "Cropped leather jackets."
 
-3. STYLE BRIEF: A short paragraph (3 to 5 sentences) written in FIRST-PERSON SINGULAR as if the user is describing themselves. The user should read it and think "yes, that's me." Do NOT use em dashes. Do NOT sound like marketing copy. Do not begin with "I am" or "My style is" — start with a more specific observation. Examples of tone:
-   - "I gravitate toward quiet confidence in how I dress. Clean lines, warm neutrals, investment pieces I'll reach for again and again. I'm more interested in silhouette than trend, and I dress for the life I'm stepping into."
-   - "I like clothes that look better the more I wear them. Lived-in textures, a little slouch, nothing too precious. My wardrobe does most of its work from the shoulders up and the knees down."
+3. STYLE BRIEF: A short paragraph of EXACTLY 2 to 3 sentences (no more than 50 words total) written in FIRST-PERSON SINGULAR as if the user is describing themselves. The user should read it and think "yes, that's me." Be concise and punchy, not a list of clauses. Do NOT use em dashes. Do NOT sound like marketing copy. Do not begin with "I am" or "My style is" — start with a more specific observation. Examples of tone and length:
+   - "I gravitate toward quiet confidence in how I dress. Clean lines, warm neutrals, pieces I'll reach for again and again."
+   - "I like clothes that look better the more I wear them. My wardrobe does most of its work from the shoulders up and the knees down."
 
 4. PALETTE: 4 to 6 specific color descriptors. Use concrete language like "oat," "espresso," "ink navy," "terracotta," "bone white" rather than generic words like "neutral" or "earthy."
 
@@ -91,6 +93,7 @@ CRITICAL RULES:
 - Weight the vibe description heavily. It contains the user's intent in their own words.
 - Use the A/B choices to break ties and sharpen direction. If they chose "Quiet Luxury" over "Bold Expression," reflect that.
 - Use visual cues as supporting signal, not the primary driver.
+- OCCASIONS tell you what contexts the wardrobe actually needs to cover. Only reflect occasions the user actually selected. If "Workwear" is not in their list, do not default silhouettes or the style brief toward office or professional dressing, even if that feels like a "safe" choice. If "Everyday," "Going Out," or "Loungewear" are selected instead, ground your silhouette picks and brief in those contexts.
 - Body input shapes silhouette recommendations, nothing else. Never reference body measurements, size, or weight in keywords or the style brief.
 - Never use em dashes anywhere in your output.
 - Respond with ONLY valid JSON matching the exact schema below. No preamble, no markdown, no code fences.
@@ -111,6 +114,9 @@ ${selectedVisualCues && selectedVisualCues.length > 0 ? selectedVisualCues.join(
 
 A/B PREFERENCE CHOICES:
 ${abChoicesResolved || "No choices made"}
+
+OCCASIONS THEY DRESS FOR:
+${occasions && occasions.length > 0 ? occasions.join(", ") : "Not specified"}
 
 BODY INPUT:
 ${bodyContext}
@@ -165,11 +171,26 @@ Respond with ONLY this JSON structure:
 
     // Enforce the "no em dashes" rule as a safety net — strip any Claude missed
     const stripEmDashes = (s: string) => (s || "").replace(/—/g, ",").replace(/–/g, ",");
+
+    // Enforce the style brief length cap as a safety net, in case the model runs long.
+    const capBriefLength = (s: string, maxWords = 60) => {
+      const words = (s || "").trim().split(/\s+/);
+      if (words.length <= maxWords) return s;
+      const sentences = s.match(/[^.!?]+[.!?]*/g) || [s];
+      let result = "";
+      for (const sentence of sentences) {
+        const candidate = result + sentence;
+        if (candidate.trim().split(/\s+/).length > maxWords && result) break;
+        result = candidate;
+      }
+      return result.trim() || words.slice(0, maxWords).join(" ");
+    };
+
     const clean = {
       keywords: (parsed.keywords || []).map(stripEmDashes),
       silhouettes: (parsed.silhouettes || []).map(stripEmDashes),
       palette: (parsed.palette || []).map(stripEmDashes),
-      style_brief: stripEmDashes(parsed.style_brief || ""),
+      style_brief: capBriefLength(stripEmDashes(parsed.style_brief || "")),
     };
 
     return new Response(JSON.stringify(clean), {

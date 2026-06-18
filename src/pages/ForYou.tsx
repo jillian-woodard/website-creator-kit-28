@@ -152,6 +152,8 @@ const ForYou = () => {
             budget_min: p.budget_min,
             budget_max: p.budget_max,
             shopping_preference: p.shopping_preference,
+            occasions: p.occasions,
+            selected_visual_cues: p.selected_visual_cues,
           },
           feedback,
         },
