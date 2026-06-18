@@ -4,12 +4,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -36,6 +38,25 @@ const Auth = () => {
       toast.error(err.message || "Authentication failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Enter your email above first, then click \"Forgot password?\"");
+      return;
+    }
+    setResetLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Check your email for a password reset link.");
+    } catch (err: any) {
+      toast.error(err.message || "Could not send reset email");
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -77,6 +98,16 @@ const Auth = () => {
             {loading ? "..." : isSignUp ? "Sign Up" : "Sign In"}
           </Button>
         </form>
+
+        {!isSignUp && (
+          <button
+            onClick={handleForgotPassword}
+            disabled={resetLoading}
+            className="mt-4 text-sm text-muted-foreground font-sans hover:text-foreground transition-colors block mx-auto"
+          >
+            {resetLoading ? "Sending..." : "Forgot password?"}
+          </button>
+        )}
 
         <button
           onClick={() => setIsSignUp(!isSignUp)}
