@@ -21,6 +21,7 @@ export const useSubscription = (): SubscriptionContextType => {
   const [loading, setLoading] = useState(true);
 
   const fetchSubscription = async () => {
+    setLoading(true);
     if (!user) {
       setSubscription(null);
       setLoading(false);
