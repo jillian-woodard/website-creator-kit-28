@@ -240,10 +240,12 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="py-10 border-t border-border bg-background">
-        <div className="container mx-auto px-6 text-center">
+        <div className="container mx-auto px-6 text-center flex items-center justify-center gap-6 flex-wrap">
           <p className="text-xs text-muted-foreground font-sans uppercase tracking-[0.2em]">
             © 2026 Figure
           </p>
+          <a href="/terms" className="text-xs text-muted-foreground font-sans uppercase tracking-[0.2em] hover:text-foreground transition-colors">Terms</a>
+          <a href="/privacy" className="text-xs text-muted-foreground font-sans uppercase tracking-[0.2em] hover:text-foreground transition-colors">Privacy</a>
         </div>
       </footer>
     </div>

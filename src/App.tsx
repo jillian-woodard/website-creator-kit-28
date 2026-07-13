@@ -18,6 +18,8 @@ import Guide from "./pages/Guide.tsx";
 import ForYou from "./pages/ForYou.tsx";
 import About from "./pages/About.tsx";
 import Pricing from "./pages/Pricing.tsx";
+import Privacy from "./pages/Privacy.tsx";
+import Terms from "./pages/Terms.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
@@ -57,6 +59,8 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/about" element={<About />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/closet" element={<ProtectedRoute><Closet /></ProtectedRoute>} />
               <Route path="/closet/connect-email" element={<ProtectedRoute><ConnectEmail /></ProtectedRoute>} />
