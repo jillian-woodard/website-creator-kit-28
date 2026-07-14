@@ -60,7 +60,7 @@ const ABStep = () => {
         Quick preferences.
       </h2>
       <p className="text-muted-foreground font-sans font-light mb-8 max-w-lg">
-        Pick the one that speaks to you. No wrong answers — this sharpens your profile.
+        Pick the one that speaks to you. No wrong answers. This sharpens your profile.
       </p>
 
       {/* Progress dots */}

@@ -33,7 +33,7 @@ const BudgetStep = () => {
   return (
     <div>
       <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3 font-sans">
-        Step 5
+        Step 6
       </p>
       <h2 className="text-3xl md:text-4xl font-serif text-foreground mb-3">
         What are you shopping for?
@@ -71,7 +71,7 @@ const BudgetStep = () => {
                 </div>
                 {b.enabled && (
                   <span className="text-sm font-sans text-foreground">
-                    ${b.min} — ${b.max}
+                    ${b.min}–${b.max}
                   </span>
                 )}
               </button>

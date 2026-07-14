@@ -30,7 +30,7 @@ const OccasionsStep = () => {
   return (
     <div>
       <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3 font-sans">
-        Step 4
+        Step 5
       </p>
       <h2 className="text-3xl md:text-4xl font-serif text-foreground mb-3">
         What do you dress for?
