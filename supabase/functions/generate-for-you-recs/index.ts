@@ -278,12 +278,27 @@ const BRAND_DIRECTORY: BrandEntry[] = [
 
 // Maps a style icon's id (as stored in selectedVisualCues) to the Visual Cue category it
 // represents, so a user's photo picks translate into the same aesthetic vocabulary used in
-// the brand directory. Source: src/lib/styleIconsData.ts.
+// the brand directory. Source: src/lib/styleIconsData.ts. Note: the live icon set uses a
+// "Red Carpet & Editorial" category that doesn't exist in the brand directory's aesthetic
+// tags (that vocabulary still uses "Polished & Dressed Up" from before the rename), so those
+// icons are aliased to "Polished & Dressed Up" here rather than left as a signal that could
+// never match any brand.
 const ICON_CATEGORY_MAP: Record<string, string> = {
+  skepta: "Streetwear & Casual",
   julia: "Streetwear & Casual",
+  asap: "Streetwear & Casual",
   lawrence: "Streetwear & Casual",
   skylar: "Streetwear & Casual",
+  zendaya: "Polished & Dressed Up",
+  timothee: "Polished & Dressed Up",
+  rihanna: "Polished & Dressed Up",
+  hailey: "Classic & Tailored",
+  hyunbin: "Classic & Tailored",
   hannah: "Classic & Tailored",
+  kim: "Avant-Garde & Eclectic",
+  pharrell: "Avant-Garde & Eclectic",
+  tracee: "Avant-Garde & Eclectic",
+  lewis: "Avant-Garde & Eclectic",
   maysa1: "Avant-Garde & Eclectic",
   maryann: "Avant-Garde & Eclectic",
   teaira: "Avant-Garde & Eclectic",
