@@ -41,7 +41,7 @@ const BodyStep = () => {
         Help us understand your shape.
       </h2>
       <p className="text-muted-foreground font-sans font-light mb-8 max-w-lg">
-        This helps us recommend silhouettes that work for you. Choose whichever option feels comfortable — all three lead to the same great recommendations.
+        This helps us recommend silhouettes that work for you. Choose whichever option feels comfortable. All three lead to the same great recommendations.
       </p>
 
       {/* Height (required) */}
@@ -138,7 +138,7 @@ const BodyStep = () => {
       {data.bodyInputMethod === "manual" && (
         <div className="bg-card border border-border rounded-lg p-8 space-y-5">
           <p className="text-sm text-muted-foreground font-sans font-light">
-            💡 Your measurements help us suggest what size to order from specific brands and stores — no more guessing.
+            💡 Your measurements help us suggest what size to order from specific brands and stores. No more guessing.
           </p>
           {(["bust", "waist", "hips"] as const).map((field) => (
             <div key={field}>

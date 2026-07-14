@@ -26,7 +26,7 @@ const VisualCuesStep = () => {
         What catches your eye?
       </h2>
       <p className="text-muted-foreground font-sans font-light mb-4 max-w-lg">
-        Tap any style icons that speak to you. Select as many as you want — this helps us understand your aesthetic.
+        Tap any style icons that speak to you. Select as many as you want. It helps us understand your aesthetic.
       </p>
       <p className="text-xs text-muted-foreground/70 font-sans mb-8">
         {data.selectedVisualCues.length} selected
@@ -106,7 +106,7 @@ const VisualCuesStep = () => {
       ))}
 
       <p className="text-sm text-muted-foreground/70 font-sans italic mt-4">
-        No pressure — you can skip this step if nothing stands out. Your vibe description already tells us a lot!
+        No pressure. You can skip this step if nothing stands out. Your vibe description already tells us a lot!
       </p>
     </div>
   );

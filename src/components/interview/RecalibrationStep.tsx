@@ -5,7 +5,7 @@ export type RecalibrationCadence = "weekly" | "monthly" | "quarterly" | "never";
 
 const options: { id: RecalibrationCadence; label: string; desc: string }[] = [
   { id: "weekly", label: "Weekly", desc: "Tiny check-ins. Best when your taste is shifting fast." },
-  { id: "monthly", label: "Monthly", desc: "A balanced rhythm — keeps your profile fresh without the noise." },
+  { id: "monthly", label: "Monthly", desc: "A balanced rhythm that keeps your profile fresh without the noise." },
   { id: "quarterly", label: "Quarterly", desc: "Seasonal recalibration. Light-touch and aligned with new collections." },
   { id: "never", label: "Not now", desc: "Skip recurring check-ins. You can recalibrate manually anytime." },
 ];
