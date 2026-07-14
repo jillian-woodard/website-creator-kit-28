@@ -1,4 +1,5 @@
 import haileyBieberImg from "@/assets/hailey-bieber.png";
+import jourdanRianeImg from "@/assets/jourdan-riane.jpg";
 import zendayaImg from "@/assets/zendaya.avif";
 import hyunBinImg from "@/assets/hyun-bin.jpg";
 import timotheeImg from "@/assets/timothee-chalamet.webp";
@@ -36,6 +37,7 @@ export const styleIcons: StyleIcon[] = [
   { id: "hailey", name: "Hailey Bieber", from: "Tucson, USA", img: haileyBieberImg, category: "Classic & Tailored", instagram: "https://instagram.com/haileybieber" },
   { id: "hyunbin", name: "Hyun Bin", from: "Seoul, South Korea", img: hyunBinImg, category: "Classic & Tailored", instagram: "https://instagram.com/vast_com" },
   { id: "rihanna", name: "Rihanna", from: "Barbados", img: rihannaImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/badgalriri" },
+  { id: "jourdan", name: "Jourdan Riane", from: "Essex, England", img: jourdanRianeImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/jourdanriane" },
   { id: "lawrence", name: "Lawrence Schlossman", from: "New York, USA", img: lawrenceImg, category: "Streetwear & Casual", instagram: "https://instagram.com/lawrenceschlossman" },
   { id: "kim", name: "Kim Kardashian", from: "Los Angeles, USA", img: kimKImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/kimkardashian" },
   { id: "pharrell", name: "Pharrell", from: "Virginia Beach, USA", img: pharrellImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/pharrell" },

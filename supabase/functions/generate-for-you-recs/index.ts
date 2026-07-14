@@ -292,6 +292,7 @@ const ICON_CATEGORY_MAP: Record<string, string> = {
   zendaya: "Polished & Dressed Up",
   timothee: "Polished & Dressed Up",
   rihanna: "Polished & Dressed Up",
+  jourdan: "Polished & Dressed Up",
   hailey: "Classic & Tailored",
   hyunbin: "Classic & Tailored",
   hannah: "Classic & Tailored",
