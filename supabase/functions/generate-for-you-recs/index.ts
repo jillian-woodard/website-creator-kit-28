@@ -327,6 +327,57 @@ function deriveStyleSignals(visualCues: string[], vibeDescription: string): stri
   return Array.from(signals);
 }
 
+// Condensed "most-flattering" garment silhouette guidance per body type and category, sourced
+// from src/lib/bodyTypeStyling.ts (the same dataset that powers the Profile page's styling
+// guide) so this logic and that guide never disagree. Only covers categories where body type
+// meaningfully changes which garment shapes flatter: Shoes and Accessories are intentionally
+// left out. These are garment-cut terms only (wrap, A-line, empire waist), never body
+// descriptors, so they stay compatible with the "no body size in queries" rule below.
+type SilhouetteBodyType = "hourglass" | "pear" | "apple" | "rectangle" | "inverted-triangle";
+
+const SILHOUETTE_GUIDE: Record<SilhouetteBodyType, Record<string, string[]>> = {
+  hourglass: {
+    Tops: ["wrap top", "fitted V-neck", "fitted bodysuit"],
+    Bottoms: ["high-waisted skinny jeans", "pencil skirt"],
+    Dresses: ["wrap dress", "fit-and-flare dress"],
+    Outerwear: ["belted trench coat", "fitted blazer"],
+  },
+  pear: {
+    Tops: ["boat-neck top", "structured puff-sleeve blouse"],
+    Bottoms: ["dark straight-leg jeans", "A-line maxi skirt", "wide-leg jeans"],
+    Dresses: ["fit-and-flare dress", "empire-waist dress"],
+    Outerwear: ["structured blazer", "cropped moto jacket"],
+  },
+  apple: {
+    Tops: ["V-neck tunic", "empire-waist top"],
+    Bottoms: ["straight-leg or bootcut jeans", "A-line skirt", "slim-fit trousers"],
+    Dresses: ["empire-waist maxi dress", "wrap dress"],
+    Outerwear: ["longline open-front cardigan", "single-breasted blazer"],
+  },
+  rectangle: {
+    Tops: ["peplum top", "wrap or surplice top"],
+    Bottoms: ["high-waisted wide-leg pants", "flared or A-line skirt", "ruched skirt"],
+    Dresses: ["wrap dress", "fit-and-flare dress", "belted shirt dress"],
+    Outerwear: ["belted trench coat", "cropped jacket with peplum hem"],
+  },
+  "inverted-triangle": {
+    Tops: ["V-neck or scoop-neck fitted top", "raglan sleeve top"],
+    Bottoms: ["wide-leg or palazzo pants", "full A-line skirt", "flared jeans"],
+    Dresses: ["full-skirted or flared dress", "V-neck A-line dress", "tiered dress"],
+    Outerwear: ["waterfall cardigan", "long-line coat with flared hem"],
+  },
+};
+
+// Looks up flattering garment silhouettes for this body type and category. Returns null for
+// categories with no coverage (Shoes, Accessories) or an unrecognized/empty body type (covers
+// "estimated" from the photo-upload path, and users who used the manual-measurements path,
+// neither of which sets a real silhouette type).
+function silhouetteGuidanceForCategory(silhouetteType: string, category: string): string[] | null {
+  const guide = SILHOUETTE_GUIDE[silhouetteType as SilhouetteBodyType];
+  if (!guide) return null;
+  return guide[category] || null;
+}
+
 // Does this brand's gender availability match the user's shopping preference?
 // "both" and "nonbinary" stay permissive. We don't have a clean unisex signal in the
 // source data, so excluding brands there would just shrink the pool for no real gain.
@@ -460,6 +511,18 @@ serve(async (req) => {
       return `${cat}: ${list}`;
     }).join("\n");
 
+    // Build flattering-silhouette guidance per category from the user's body type, where
+    // coverage exists. Empty string (not present in the prompt at all) if there's nothing to
+    // say, e.g. no silhouette type set, or it only covers Shoes/Accessories for this profile.
+    const silhouetteLines = CATEGORIES
+      .map((cat) => {
+        const tips = silhouetteGuidanceForCategory(silhouetteType, cat);
+        if (!tips || tips.length === 0) return null;
+        return `${cat}: ${tips.join(", ")}`;
+      })
+      .filter((line): line is string => line !== null);
+    const silhouetteContextBlock = silhouetteLines.join("\n");
+
     const feedbackBlock = (savedTitles.length > 0 || dismissedTitles.length > 0)
       ? `\n\nLEARNING SIGNALS from this user's past behavior:
 ${savedTitles.length > 0 ? `- LOVED (saved to shortlist): ${savedTitles.slice(0, 12).join("; ")}` : ""}
@@ -477,15 +540,18 @@ ${CATEGORIES.join(", ")}
 
 BRAND SHORTLIST: for each category, you are given a shortlist of real brands already filtered to this user's budget and shopping preference, and ranked by how closely their aesthetic tags match this user's detected style signals (${styleSignals.length > 0 ? styleSignals.join(", ") : "none detected, rank on the keywords and style brief below instead"}):
 ${brandContextBlock}
-
+${silhouetteContextBlock ? `
+SILHOUETTE GUIDANCE: for the categories below, these garment cuts tend to be flattering for this user's body type. Where one fits naturally alongside the brand and aesthetic you've already chosen, work it into the query as a garment style, not as a comment on the body itself:
+${silhouetteContextBlock}
+` : ""}
 Query rules:
 - 4 to 8 words
 - For each category, look at its brand shortlist above and pick the ONE brand whose tier and aesthetic tags best match this user's aesthetic keywords, style brief, and vibe. The shortlist is already ranked by aesthetic fit, so lean toward the brands nearer the top. Lead the query with that brand's name (e.g. "Reformation floral wrap dress" rather than "floral wrap dress"). This is the most important rule: a query without a brand name should be the exception, not the default.
 - Only skip the brand name if the shortlist for that category is empty, or if none of the listed brands are even a loose match for the user's aesthetic. In that rare case, write a brand-agnostic query instead of forcing a bad fit.
 - Never invent a brand name that isn't in the shortlist provided.
 - Specific enough to return focused results, but broad enough to return several options
-- Include color, silhouette, or texture cues drawn from the profile in addition to the brand name
-- Do NOT reference body size, weight, or measurements
+- Include color, silhouette, or texture cues drawn from the profile in addition to the brand name. Where silhouette guidance is given above for a category, you may name a specific flattering garment cut, like wrap, A-line, or empire waist, as part of the query.
+- Do NOT reference body size, weight, measurements, or the body type itself (e.g. never write "hourglass" or "pear shaped" in a query). Silhouette guidance should only ever surface as a garment cut term, never as a body descriptor.
 - Do NOT use em dashes
 - Apply the gender modifier rule above to every query.
 - Ground queries in the occasions the user actually selected. If "Workwear" is not among their occasions, do not default to office or corporate styling, even as a "safe" choice. If they selected things like "Everyday," "Going Out," or "Loungewear," queries should reflect that instead.
