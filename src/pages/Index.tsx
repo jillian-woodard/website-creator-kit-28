@@ -13,7 +13,7 @@ const EXPLORE_ITEMS = [
   { icon: Sparkles, title: "Style Interview", desc: "Build your aesthetic identity", to: "/interview" },
   { icon: UserCircle, title: "Your Profile", desc: "Keywords, silhouettes, palette", to: "/profile" },
   { icon: ShoppingBag, title: "Suggested Items", desc: "Picks within your budget", to: "/for-you" },
-  { icon: Shirt, title: "Your Closet", desc: "What you already own", to: "/closet" },
+  { icon: Shirt, title: "Mix My Closet", desc: "Build new outfits from what you already own", to: "/closet" },
   { icon: CalendarDays, title: "Your Week Ahead", desc: "Outfits planned for the week", to: "/planner" },
   { icon: Info, title: "About Us", desc: "Our mission and why we built it", to: "/about" },
 ];
@@ -93,10 +93,10 @@ const Index = () => {
           className="font-serif font-extrabold tracking-tight text-foreground leading-[0.95] text-5xl sm:text-6xl md:text-7xl lg:text-8xl max-w-4xl hyphens-none"
           style={{ wordBreak: "normal", overflowWrap: "normal", hyphens: "none" }}
         >
-          Look Like Who You're Becoming.
+          Figure out what to buy.
         </h1>
         <p className="text-base md:text-lg font-sans font-light text-muted-foreground max-w-md leading-relaxed mt-8">
-          A 7-minute style interview. A profile built around your body, life, and vision.
+          Built around your taste, your budget, and your silhouette. Define your style before you shop.
         </p>
         <div className="flex flex-col items-center gap-3 mt-10">
           <Button
@@ -124,7 +124,7 @@ const Index = () => {
               </h2>
             </div>
             <p className="text-muted-foreground font-sans text-sm md:text-base max-w-sm">
-              No wardrobe audit. No selfie. No digital twin — just tell us who you're becoming.
+              No wardrobe audit. No selfie. No digital twin. Just tell us what you want.
             </p>
           </div>
 
@@ -174,7 +174,7 @@ const Index = () => {
             Styles we love.
           </h2>
           <p className="text-muted-foreground font-sans text-sm md:text-base max-w-md mt-4">
-            We don't copy their fit — we translate it onto your body, your budget, your becoming.
+            We don't copy their fit. We translate it onto your body, your budget, your taste.
           </p>
         </div>
 

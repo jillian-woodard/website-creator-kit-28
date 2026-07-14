@@ -60,10 +60,10 @@ const Pricing = () => {
           Styling Companion
         </p>
         <h1 className="text-4xl font-serif text-foreground mb-4">
-          Look Like Who You're Becoming
+          Figure out what to buy
         </h1>
         <p className="text-muted-foreground font-sans mb-10 leading-relaxed">
-          Your AI-powered closet, outfit planner, and personal style guide — all in one place.
+          Your AI-powered closet, outfit planner, and personal style guide, all in one place.
         </p>
 
         <div className="border border-border p-8 mb-8">
