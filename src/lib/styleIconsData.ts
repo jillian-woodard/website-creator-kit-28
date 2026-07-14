@@ -11,7 +11,7 @@ import camilaCoelhoImg from "@/assets/camila-coelho.jpg";
 import chriselleLimImg from "@/assets/chriselle-lim.jpg";
 import daniAustinImg from "@/assets/dani-austin.jpg";
 import hoangKimCungImg from "@/assets/hoang-kim-cung.jpg";
-import aylinImg from "@/assets/aylin.jpg";
+import aylinImg from "@/assets/Aylin.jpg";
 
 export interface StyleIcon {
   id: string;
