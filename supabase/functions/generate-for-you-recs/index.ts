@@ -284,25 +284,20 @@ const BRAND_DIRECTORY: BrandEntry[] = [
 // icons are aliased to "Polished & Dressed Up" here rather than left as a signal that could
 // never match any brand.
 const ICON_CATEGORY_MAP: Record<string, string> = {
-  skepta: "Streetwear & Casual",
   julia: "Streetwear & Casual",
-  asap: "Streetwear & Casual",
   lawrence: "Streetwear & Casual",
   skylar: "Streetwear & Casual",
-  zendaya: "Polished & Dressed Up",
-  timothee: "Polished & Dressed Up",
-  rihanna: "Polished & Dressed Up",
   jourdan: "Polished & Dressed Up",
-  hailey: "Classic & Tailored",
-  hyunbin: "Classic & Tailored",
+  camila: "Polished & Dressed Up",
+  chriselle: "Polished & Dressed Up",
   hannah: "Classic & Tailored",
-  kim: "Avant-Garde & Eclectic",
-  pharrell: "Avant-Garde & Eclectic",
-  tracee: "Avant-Garde & Eclectic",
-  lewis: "Avant-Garde & Eclectic",
+  dani: "Classic & Tailored",
+  hoangkim: "Classic & Tailored",
+  aylin: "Classic & Tailored",
   maysa1: "Avant-Garde & Eclectic",
   maryann: "Avant-Garde & Eclectic",
   teaira: "Avant-Garde & Eclectic",
+  aimee: "Avant-Garde & Eclectic",
 };
 
 // The fixed Style Word vocabulary a user can pick during the interview. These get folded

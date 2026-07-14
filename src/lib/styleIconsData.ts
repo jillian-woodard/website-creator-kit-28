@@ -1,22 +1,17 @@
-import haileyBieberImg from "@/assets/hailey-bieber.png";
 import jourdanRianeImg from "@/assets/jourdan-riane.jpg";
-import zendayaImg from "@/assets/zendaya.avif";
-import hyunBinImg from "@/assets/hyun-bin.jpg";
-import timotheeImg from "@/assets/timothee-chalamet.webp";
-import skeptaImg from "@/assets/skepta.webp";
-import pharrellImg from "@/assets/pharrell.webp";
-import kimKImg from "@/assets/kim-kardashian.png";
-import traceeImg from "@/assets/tracee-ellis-ross.png";
-import lewisImg from "@/assets/lewis-hamilton.webp";
 import juliaImg from "@/assets/julia-sarr-jamois.jpg";
-import rihannaImg from "@/assets/rihanna.jpg";
 import maysaImg1 from "@/assets/maysa-shems-1.png";
 import hannahImg from "@/assets/hannah-harrell.png";
 import lawrenceImg from "@/assets/lawrence-schlossman.png";
 import maryannImg from "@/assets/maryann-santos.png";
 import skylarImg from "@/assets/skylar-marshai.png";
 import teairaImg from "@/assets/teaira-walker.png";
-import asapImg from "@/assets/asap-rocky.png";
+import aimeeSongImg from "@/assets/aimee-song.jpg";
+import camilaCoelhoImg from "@/assets/camila-coelho.jpg";
+import chriselleLimImg from "@/assets/chriselle-lim.jpg";
+import daniAustinImg from "@/assets/dani-austin.jpg";
+import hoangKimCungImg from "@/assets/hoang-kim-cung.jpg";
+import aylinImg from "@/assets/aylin.jpg";
 
 export interface StyleIcon {
   id: string;
@@ -29,25 +24,20 @@ export interface StyleIcon {
 }
 
 export const styleIcons: StyleIcon[] = [
-  { id: "skepta", name: "Skepta", from: "Tottenham, England", img: skeptaImg, category: "Streetwear & Casual", instagram: "https://instagram.com/skepta" },
   { id: "julia", name: "Julia Sarr-Jamois", from: "London, England", img: juliaImg, category: "Streetwear & Casual", instagram: "https://instagram.com/juliasarrjamois" },
-  { id: "asap", name: "A$AP Rocky", from: "Harlem, USA", img: asapImg, category: "Streetwear & Casual", instagram: "https://instagram.com/asaprocky" },
-  { id: "zendaya", name: "Zendaya", from: "Los Angeles, USA", img: zendayaImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/zendaya" },
-  { id: "timothee", name: "Timothée Chalamet", from: "New York, USA", img: timotheeImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/tchalamet" },
-  { id: "hailey", name: "Hailey Bieber", from: "Tucson, USA", img: haileyBieberImg, category: "Classic & Tailored", instagram: "https://instagram.com/haileybieber" },
-  { id: "hyunbin", name: "Hyun Bin", from: "Seoul, South Korea", img: hyunBinImg, category: "Classic & Tailored", instagram: "https://instagram.com/vast_com" },
-  { id: "rihanna", name: "Rihanna", from: "Barbados", img: rihannaImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/badgalriri" },
   { id: "jourdan", name: "Jourdan Riane", from: "Essex, England", img: jourdanRianeImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/jourdanriane" },
   { id: "lawrence", name: "Lawrence Schlossman", from: "New York, USA", img: lawrenceImg, category: "Streetwear & Casual", instagram: "https://instagram.com/lawrenceschlossman" },
-  { id: "kim", name: "Kim Kardashian", from: "Los Angeles, USA", img: kimKImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/kimkardashian" },
-  { id: "pharrell", name: "Pharrell", from: "Virginia Beach, USA", img: pharrellImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/pharrell" },
-  { id: "tracee", name: "Tracee Ellis Ross", from: "Los Angeles, USA", img: traceeImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/traceeellisross" },
-  { id: "lewis", name: "Lewis Hamilton", from: "Stevenage, England", img: lewisImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/lewishamilton" },
   { id: "maysa1", name: "Maysa Shems", from: "Nigeria / USA", img: maysaImg1, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/maysashems" },
   { id: "maryann", name: "Maryann Santos", from: "USA", img: maryannImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/styleby.ms" },
   { id: "hannah", name: "Hannah Harrell", from: "USA", img: hannahImg, category: "Classic & Tailored", instagram: "https://instagram.com/hannahharrell_", ltk: "https://www.shopltk.com/explore/hannahharrell_" },
   { id: "skylar", name: "Skylar Marshai", from: "USA", img: skylarImg, category: "Streetwear & Casual", instagram: "https://www.instagram.com/skylarmarshai/" },
   { id: "teaira", name: "Teaira Walker", from: "USA", img: teairaImg, category: "Avant-Garde & Eclectic", instagram: "https://www.instagram.com/teairawalker/" },
+  { id: "camila", name: "Camila Coelho", from: "Los Angeles, USA", img: camilaCoelhoImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/camilacoelho", ltk: "https://www.shopltk.com/explore/camilacoelho" },
+  { id: "chriselle", name: "Chriselle Lim", from: "Los Angeles, USA", img: chriselleLimImg, category: "Red Carpet & Editorial", instagram: "https://instagram.com/chrisellelim", ltk: "https://www.shopltk.com/explore/chrisellelim" },
+  { id: "aimee", name: "Aimee Song", from: "Los Angeles, USA", img: aimeeSongImg, category: "Avant-Garde & Eclectic", instagram: "https://instagram.com/aimeesong", ltk: "https://www.shopltk.com/explore/AimeeSong" },
+  { id: "dani", name: "Dani Austin", from: "Dallas, USA", img: daniAustinImg, category: "Classic & Tailored", instagram: "https://instagram.com/daniaustin", ltk: "https://www.shopltk.com/explore/daniaustin" },
+  { id: "hoangkim", name: "Hoang-Kim Cung", from: "Dallas, USA", img: hoangKimCungImg, category: "Classic & Tailored", instagram: "https://instagram.com/hkcung", ltk: "https://www.shopltk.com/explore/hkcung" },
+  { id: "aylin", name: "Aylin", from: "USA", img: aylinImg, category: "Classic & Tailored", instagram: "https://instagram.com/stylinbyaylin", ltk: "https://www.shopltk.com/explore/stylinbyaylin" },
 ];
 
 export const categories = ["Streetwear & Casual", "Red Carpet & Editorial", "Classic & Tailored", "Avant-Garde & Eclectic"];
