@@ -12,6 +12,7 @@ import chriselleLimImg from "@/assets/chriselle-lim.jpg";
 import daniAustinImg from "@/assets/dani-austin.jpg";
 import hoangKimCungImg from "@/assets/hoang-kim-cung.jpg";
 import aylinImg from "@/assets/Aylin.jpg";
+import carolImg from "@/assets/carol.jpg";
 
 export interface StyleIcon {
   id: string;
@@ -38,6 +39,7 @@ export const styleIcons: StyleIcon[] = [
   { id: "dani", name: "Dani Austin", from: "Dallas, USA", img: daniAustinImg, category: "Classic & Tailored", instagram: "https://instagram.com/daniaustin", ltk: "https://www.shopltk.com/explore/daniaustin" },
   { id: "hoangkim", name: "Hoang-Kim Cung", from: "Dallas, USA", img: hoangKimCungImg, category: "Classic & Tailored", instagram: "https://instagram.com/hkcung", ltk: "https://www.shopltk.com/explore/hkcung" },
   { id: "aylin", name: "Aylin", from: "USA", img: aylinImg, category: "Classic & Tailored", instagram: "https://instagram.com/stylinbyaylin", ltk: "https://www.shopltk.com/explore/stylinbyaylin" },
+  { id: "carol", name: "Carol", from: "Los Angeles, USA", img: carolImg, category: "Streetwear & Casual", instagram: "https://instagram.com/itscarolriley" },
 ];
 
 export const categories = ["Streetwear & Casual", "Red Carpet & Editorial", "Classic & Tailored", "Avant-Garde & Eclectic"];
