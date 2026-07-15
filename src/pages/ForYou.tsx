@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, Loader2, ExternalLink, Sparkles, Bookmark, BookmarkCheck, X, TrendingUp } from "lucide-react";
 import { useSavedItems } from "@/hooks/useSavedItems";
-import { useDismissedItems } from "@/hooks/useDismissedItems";
+import { useDismissedItems, DISMISS_REASONS, DismissReason } from "@/hooks/useDismissedItems";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
 
 interface Product {
@@ -25,6 +26,84 @@ interface CategoryRecs {
 
 const ALL_CATEGORIES = ["Tops", "Bottoms", "Dresses", "Outerwear", "Shoes", "Accessories"];
 
+interface RetailerCount {
+  retailer: string;
+  count: number;
+}
+
+interface RejectedRetailer extends RetailerCount {
+  reasons: Record<string, number>;
+}
+
+interface TasteSignal {
+  savedTitles: string[];
+  dismissedTitles: string[];
+  lovedRetailers: RetailerCount[];
+  rejectedRetailers: RejectedRetailer[];
+  reasonTotals: Record<string, number>;
+}
+
+// Durable, all-time taste memory: unlike the last-20-titles window below, this scans the
+// user's FULL saved/dismissed history and aggregates it by retailer, so a brand they've
+// saved from 15 times keeps mattering long after those saves scroll out of any "recent"
+// window. Capped at 500 rows each — plenty of headroom for a single user, cheap to fetch.
+async function buildTasteSignal(userId: string): Promise<TasteSignal> {
+  const [savedRes, dismissedRes, allSavedRes, allDismissedRes] = await Promise.all([
+    supabase
+      .from("saved_items")
+      .select("title")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("rec_dismissals")
+      .select("product_title")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase.from("saved_items").select("retailer").eq("user_id", userId).limit(500),
+    supabase.from("rec_dismissals").select("retailer, reason").eq("user_id", userId).limit(500),
+  ]);
+
+  const lovedCounts: Record<string, number> = {};
+  for (const row of (allSavedRes.data || []) as any[]) {
+    if (!row.retailer) continue;
+    lovedCounts[row.retailer] = (lovedCounts[row.retailer] || 0) + 1;
+  }
+  const lovedRetailers = Object.entries(lovedCounts)
+    .map(([retailer, count]) => ({ retailer, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 15);
+
+  const rejectedCounts: Record<string, { count: number; reasons: Record<string, number> }> = {};
+  const reasonTotals: Record<string, number> = {};
+  for (const row of (allDismissedRes.data || []) as any[]) {
+    if (row.retailer) {
+      if (!rejectedCounts[row.retailer]) rejectedCounts[row.retailer] = { count: 0, reasons: {} };
+      rejectedCounts[row.retailer].count += 1;
+      if (row.reason) {
+        rejectedCounts[row.retailer].reasons[row.reason] =
+          (rejectedCounts[row.retailer].reasons[row.reason] || 0) + 1;
+      }
+    }
+    if (row.reason) {
+      reasonTotals[row.reason] = (reasonTotals[row.reason] || 0) + 1;
+    }
+  }
+  const rejectedRetailers = Object.entries(rejectedCounts)
+    .map(([retailer, v]) => ({ retailer, count: v.count, reasons: v.reasons }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 15);
+
+  return {
+    savedTitles: (savedRes.data || []).map((r: any) => r.title).filter(Boolean),
+    dismissedTitles: (dismissedRes.data || []).map((r: any) => r.product_title).filter(Boolean),
+    lovedRetailers,
+    rejectedRetailers,
+    reasonTotals,
+  };
+}
+
 const ForYou = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -41,6 +120,11 @@ const ForYou = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(1000);
+  const [openReasonFor, setOpenReasonFor] = useState<string | null>(null);
+  // Per-retailer score used to live-rerank the current batch as the user saves/dismisses.
+  // Seeded from all-time taste signal on load, then nudged in-session on every save/dismiss
+  // so the grid keeps adapting without waiting for a full "Refresh."
+  const [retailerAffinity, setRetailerAffinity] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -52,8 +136,25 @@ const ForYou = () => {
     if (user) {
       loadRecs();
       loadSaveRate();
+      seedRetailerAffinity();
     }
   }, [user]);
+
+  // Seeds the live re-rank score from durable taste memory, independent of whether this load
+  // triggers a fresh generation — so re-ranking works even when we're just showing cached recs.
+  const seedRetailerAffinity = async () => {
+    if (!user) return;
+    try {
+      const signal = await buildTasteSignal(user.id);
+      const seed: Record<string, number> = {};
+      for (const r of signal.lovedRetailers) seed[r.retailer] = (seed[r.retailer] || 0) + Math.min(r.count, 3);
+      for (const r of signal.rejectedRetailers)
+        seed[r.retailer] = (seed[r.retailer] || 0) - Math.min(r.count, 3);
+      setRetailerAffinity(seed);
+    } catch (err) {
+      console.error("Failed to seed retailer affinity:", err);
+    }
+  };
 
   const loadSaveRate = async () => {
     if (!user) return;
@@ -121,26 +222,16 @@ const ForYou = () => {
 
     setRegenerating(true);
     try {
-      // Pull recent feedback signals to teach the model
-      const [savedRes, dismissedRes] = await Promise.all([
-        supabase
-          .from("saved_items")
-          .select("title")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(20),
-        supabase
-          .from("rec_dismissals")
-          .select("product_title")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(20),
-      ]);
-
-      const feedback = {
-        savedTitles: (savedRes.data || []).map((r: any) => r.title).filter(Boolean),
-        dismissedTitles: (dismissedRes.data || []).map((r: any) => r.product_title).filter(Boolean),
-      };
+      // Pull both the recency-windowed signal (last 20 saves/dismissals) and the durable
+      // all-time signal (retailer-level aggregates) to teach the model.
+      const tasteSignal = await buildTasteSignal(user.id);
+      const feedback = tasteSignal;
+      // Re-seed the live re-rank score too, so it reflects whatever just changed.
+      const seed: Record<string, number> = {};
+      for (const r of tasteSignal.lovedRetailers) seed[r.retailer] = (seed[r.retailer] || 0) + Math.min(r.count, 3);
+      for (const r of tasteSignal.rejectedRetailers)
+        seed[r.retailer] = (seed[r.retailer] || 0) - Math.min(r.count, 3);
+      setRetailerAffinity(seed);
 
       const { data, error } = await supabase.functions.invoke("generate-for-you-recs", {
         body: {
@@ -217,19 +308,93 @@ const ForYou = () => {
 
   const filteredRecs = useMemo(() => {
     const visible = selectedCategory === "All" ? recs : recs.filter((r) => r.category === selectedCategory);
-    return visible.map((cat) => ({
-      ...cat,
-      products: cat.products.filter(
+    return visible.map((cat) => {
+      const products = cat.products.filter(
         (p) =>
           !isDismissed(p.link) &&
           p.price !== null &&
           p.price >= priceMin &&
           p.price <= priceMax
-      ),
-    }));
-  }, [recs, selectedCategory, priceMin, priceMax, isDismissed]);
+      );
+      // Live re-rank: bubble up items from retailers this user has saved from (durable
+      // history + this session's actions), sink items from retailers they've dismissed.
+      // Stable within a score tier so the model's own ordering is otherwise preserved.
+      const ranked = products
+        .map((p, idx) => ({ p, idx, score: retailerAffinity[p.retailer] || 0 }))
+        .sort((a, b) => b.score - a.score || a.idx - b.idx)
+        .map((r) => r.p);
+      return { ...cat, products: ranked };
+    });
+  }, [recs, selectedCategory, priceMin, priceMax, isDismissed, retailerAffinity]);
 
   const totalVisible = filteredRecs.reduce((sum, c) => sum + c.products.length, 0);
+
+  const bumpAffinity = (retailer: string, delta: number) => {
+    setRetailerAffinity((prev) => ({ ...prev, [retailer]: (prev[retailer] || 0) + delta }));
+  };
+
+  // Live backfill: after a dismiss, immediately try to replace that slot with a fresh product
+  // from the same category's already-vetted brand queries, so the grid stays full instead of
+  // just shrinking until the next full "Refresh."
+  const backfillCategory = async (cat: CategoryRecs, dismissedLink: string) => {
+    const brandQueries = cat.query.split(" | ").map((q) => q.trim()).filter(Boolean);
+    if (brandQueries.length === 0) return;
+
+    const existingLinks = new Set(recs.flatMap((c) => c.products.map((prod) => prod.link)));
+    existingLinks.add(dismissedLink);
+
+    for (const q of brandQueries) {
+      try {
+        const { data, error } = await supabase.functions.invoke("fetch-products", {
+          body: { query: q, budgetMin: priceMin, budgetMax: priceMax, limit: 6 },
+        });
+        if (error || !data?.products) continue;
+        const fresh = (data.products as Product[]).find(
+          (prod) => !existingLinks.has(prod.link) && !isDismissed(prod.link)
+        );
+        if (fresh) {
+          setRecs((prevRecs) =>
+            prevRecs.map((c) =>
+              c.category === cat.category
+                ? { ...c, products: [...c.products.filter((prod) => prod.link !== dismissedLink), fresh] }
+                : c
+            )
+          );
+          return;
+        }
+      } catch (err) {
+        console.error(`Backfill failed for ${cat.category} / ${q}:`, err);
+      }
+    }
+  };
+
+  const handleDismiss = (cat: CategoryRecs, p: Product, reason?: DismissReason) => {
+    setOpenReasonFor(null);
+    dismiss({
+      title: p.title,
+      link: p.link,
+      retailer: p.retailer,
+      category: cat.category,
+      reason,
+    });
+    bumpAffinity(p.retailer, -2);
+    backfillCategory(cat, p.link);
+  };
+
+  const handleSaveToggle = (cat: CategoryRecs, p: Product) => {
+    const wasSaved = isSaved(p.link);
+    toggleSave({
+      title: p.title,
+      price: p.price,
+      currency: p.currency,
+      image: p.image,
+      link: p.link,
+      retailer: p.retailer,
+      category: cat.category,
+      source_query: cat.query,
+    });
+    bumpAffinity(p.retailer, wasSaved ? -2 : 2);
+  };
 
   const saveRatePct =
     saveRate && saveRate.impressions > 0
@@ -262,25 +427,36 @@ const ForYou = () => {
             Profile
           </button>
           <span className="font-serif text-lg text-foreground">For You</span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => generateRecs()}
-            disabled={regenerating}
-            className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
-          >
-            {regenerating ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                Refreshing
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-3.5 h-3.5" />
-                Refresh
-              </>
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/saved")}
+              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+            >
+              <BookmarkCheck className="w-3.5 h-3.5" />
+              Shortlist
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => generateRecs()}
+              disabled={regenerating}
+              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+            >
+              {regenerating ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Refreshing
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Refresh
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -417,16 +593,7 @@ const ForYou = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              toggleSave({
-                                title: p.title,
-                                price: p.price,
-                                currency: p.currency,
-                                image: p.image,
-                                link: p.link,
-                                retailer: p.retailer,
-                                category: cat.category,
-                                source_query: cat.query,
-                              });
+                              handleSaveToggle(cat, p);
                             }}
                             aria-label={isSaved(p.link) ? "Remove from shortlist" : "Save to shortlist"}
                             aria-pressed={isSaved(p.link)}
@@ -438,23 +605,65 @@ const ForYou = () => {
                               <Bookmark className="w-4 h-4 text-foreground" />
                             )}
                           </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              dismiss({
-                                title: p.title,
-                                link: p.link,
-                                retailer: p.retailer,
-                                category: cat.category,
-                              });
-                            }}
-                            aria-label="Not for me"
-                            className="absolute bottom-2 left-2 w-8 h-8 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors shadow-sm opacity-0 group-hover:opacity-100"
+                          <Popover
+                            open={openReasonFor === p.link}
+                            onOpenChange={(open) => setOpenReasonFor(open ? p.link : null)}
                           >
-                            <X className="w-4 h-4" />
-                          </button>
+                            <PopoverTrigger asChild>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setOpenReasonFor(openReasonFor === p.link ? null : p.link);
+                                }}
+                                aria-label="Not for me"
+                                className={`absolute bottom-2 left-2 w-8 h-8 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors shadow-sm ${
+                                  openReasonFor === p.link ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                }`}
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-56 p-2"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }}
+                            >
+                              <p className="text-xs font-sans text-muted-foreground uppercase tracking-wider mb-2 px-1">
+                                Why not this one?
+                              </p>
+                              <div className="flex flex-col gap-1">
+                                {DISMISS_REASONS.map((r) => (
+                                  <button
+                                    key={r.value}
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleDismiss(cat, p, r.value);
+                                    }}
+                                    className="text-left text-sm font-sans px-2 py-1.5 rounded-sm hover:bg-muted transition-colors"
+                                  >
+                                    {r.label}
+                                  </button>
+                                ))}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDismiss(cat, p);
+                                  }}
+                                  className="text-left text-xs font-sans px-2 py-1.5 rounded-sm text-muted-foreground hover:bg-muted transition-colors border-t border-border mt-1 pt-2"
+                                >
+                                  Skip, just hide it
+                                </button>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                           <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <ExternalLink className="w-3.5 h-3.5 text-foreground" />
                           </div>

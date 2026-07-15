@@ -113,6 +113,7 @@ const BRAND_DIRECTORY: BrandEntry[] = [
   { name: "Quince", tier: "Contemporary", aestheticTags: ["Effortless", "Polished", "Minimalist"], men: "yes", women: "yes", priceMin: 40, priceMax: 800, categories: ["Accessories", "Bottoms", "Dresses", "Outerwear", "Shoes", "Tops"] },
   { name: "Oak + Fort", tier: "Contemporary", aestheticTags: ["Minimalist", "Effortless"], men: "limited", women: "yes", priceMin: 20, priceMax: 350, categories: ["Accessories", "Bottoms", "Dresses", "Outerwear", "Tops"] },
   { name: "Tank Air", tier: "Contemporary", aestheticTags: ["Streetwear & Casual"], men: "no", women: "yes", priceMin: 45, priceMax: 300, categories: ["Bottoms", "Dresses", "Outerwear", "Tops"] },
+  { name: "Recovered", tier: "Contemporary", aestheticTags: ["Streetwear & Casual", "Edgy"], men: "no", women: "yes", priceMin: 100, priceMax: 210, categories: ["Outerwear", "Tops"] },
   { name: "Jenni Kayne", tier: "Contemporary", aestheticTags: ["Effortless", "Polished", "Minimalist"], men: "no", women: "yes", priceMin: 40, priceMax: 800, categories: ["Accessories", "Bottoms", "Dresses", "Outerwear", "Shoes", "Tops"] },
   { name: "Frank & Eileen", tier: "Contemporary", aestheticTags: ["Effortless", "Polished", "Minimalist"], men: "yes", women: "yes", priceMin: 40, priceMax: 800, categories: ["Accessories", "Bottoms", "Dresses", "Outerwear", "Shoes", "Tops"] },
   { name: "Alex Mill", tier: "Contemporary", aestheticTags: ["Effortless", "Polished", "Minimalist"], men: "yes", women: "yes", priceMin: 40, priceMax: 800, categories: ["Accessories", "Bottoms", "Dresses", "Outerwear", "Shoes", "Tops"] },
@@ -403,36 +404,82 @@ function genderMatches(brand: BrandEntry, shoppingPreference: string): boolean {
   return true;
 }
 
+// How many different brands each category pulls a result from. One product per brand, so
+// this also caps how many items show up per category (e.g. 4 brands = 4 tops, each from a
+// different retailer, instead of up to 8 tops all from one store).
+const BRANDS_PER_CATEGORY = 4;
+
+interface RetailerCount {
+  retailer: string;
+  count: number;
+}
+
+interface RejectedRetailer extends RetailerCount {
+  reasons?: Record<string, number>;
+}
+
 // Filter the directory down to brands that plausibly fit this user, for this category:
 // price range overlaps their budget, gender matches, and the brand actually sells in
-// that category. Then rank by how many of the user's detected style signals overlap with
-// each brand's aestheticTags, so the closest aesthetic matches surface first. Capped at 6
-// so the prompt stays small and readable.
+// that category. A brand the user has repeatedly dismissed (or dismissed even once citing
+// "don't like the brand") is excluded outright — that's a durable, all-time signal, not
+// just something from the last 20 items, so it overrides aesthetic fit entirely. Among the
+// rest, rank by aesthetic-tag overlap with the user's detected style signals, with a bonus
+// for brands they've saved from before (also all-time), so past taste keeps compounding
+// instead of resetting on every regeneration. Capped at BRANDS_PER_CATEGORY so the prompt
+// stays small and readable, and so we query at most that many brands per category downstream.
 function brandsForCategory(
   category: string,
   budgetMin: number,
   budgetMax: number,
   shoppingPreference: string,
-  styleSignals: string[]
+  styleSignals: string[],
+  lovedRetailerMap: Map<string, number>,
+  rejectedRetailerMap: Map<string, RejectedRetailer>
 ): BrandEntry[] {
   const eligible = BRAND_DIRECTORY.filter((b) => {
     const budgetOverlaps = b.priceMin <= budgetMax && b.priceMax >= budgetMin;
     if (!budgetOverlaps) return false;
     if (!b.categories.includes(category)) return false;
     if (!genderMatches(b, shoppingPreference)) return false;
+
+    const rejected = rejectedRetailerMap.get(b.name.toLowerCase());
+    if (rejected) {
+      const dislikedBrandCount = rejected.reasons?.["dislike_brand"] || 0;
+      if (dislikedBrandCount >= 1 || rejected.count >= 3) return false;
+    }
     return true;
   });
 
-  if (styleSignals.length === 0) {
-    return eligible.slice(0, 6);
-  }
-
   const scored = eligible.map((b) => {
-    const overlap = b.aestheticTags.filter((tag) => styleSignals.includes(tag)).length;
-    return { brand: b, score: overlap };
+    const aestheticOverlap = b.aestheticTags.filter((tag) => styleSignals.includes(tag)).length;
+    const lovedBonus = Math.min(lovedRetailerMap.get(b.name.toLowerCase()) || 0, 3);
+    return { brand: b, score: aestheticOverlap * 2 + lovedBonus };
   });
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, 6).map((s) => s.brand);
+  return scored.slice(0, BRANDS_PER_CATEGORY).map((s) => s.brand);
+}
+
+// Belt-and-suspenders guard against Google Shopping returning the wrong kind of garment for
+// a category (e.g. a jacket showing up in a Tops search). Purely a title keyword check, no
+// extra API calls. Deliberately conservative: only excludes on a strong signal that the
+// product is a DIFFERENT category, never tries to positively confirm the category, so it
+// won't zero out a category's results over an ambiguous title. Accessories is left
+// unfiltered since it spans too many legitimate item types (bags, jewelry, belts, scarves)
+// to build a reliable exclude list.
+const CATEGORY_EXCLUDE_TERMS: Record<string, string[]> = {
+  Tops: ["jean", "trouser", "legging", " pant", "pants", "skirt", "shorts", "jacket", "coat", "blazer", "dress", "gown", "jumpsuit", "romper", "boot", "sneaker", "heel", "sandal", "loafer", "flats", "necklace", "earring", "bracelet", "sunglasses", "handbag", "purse"],
+  Bottoms: ["dress", "gown", "jacket", "coat", "blazer", "blouse", "tank top", "camisole", "t-shirt", "tee shirt", "boot", "sneaker", "heel", "sandal", "loafer", "flats", "necklace", "earring", "handbag", "purse"],
+  Dresses: ["jean", "trouser", " pant", "pants", "jacket", "coat", "blazer", "boot", "sneaker", "sandal", "handbag", "purse", "necklace"],
+  Outerwear: ["dress", "gown", "jean", "trouser", " pant", "pants", "skirt", "boot", "sneaker", "sandal", "handbag", "purse", "necklace"],
+  Shoes: ["dress", "gown", "jacket", "coat", "blazer", "trouser", "jean", "skirt", "handbag", "purse", "necklace"],
+  Accessories: [],
+};
+
+function passesCategoryFilter(title: string, category: string): boolean {
+  const excludes = CATEGORY_EXCLUDE_TERMS[category];
+  if (!excludes || excludes.length === 0) return true;
+  const lower = title.toLowerCase();
+  return !excludes.some((term) => lower.includes(term));
 }
 
 interface Product {
@@ -453,6 +500,12 @@ interface CategoryRecs {
 interface FeedbackSignals {
   savedTitles?: string[];
   dismissedTitles?: string[];
+  // Durable, all-time signals (not windowed to the last 20 actions) computed client-side
+  // from the user's full saved_items / rec_dismissals history. See ForYou.tsx's
+  // buildTasteSignal(). Used both to bias brand selection directly and to inform the prompt.
+  lovedRetailers?: RetailerCount[];
+  rejectedRetailers?: RejectedRetailer[];
+  reasonTotals?: Record<string, number>;
 }
 
 serve(async (req) => {
@@ -481,6 +534,13 @@ serve(async (req) => {
     const fb: FeedbackSignals = feedback || {};
     const savedTitles = (fb.savedTitles || []).slice(0, 20);
     const dismissedTitles = (fb.dismissedTitles || []).slice(0, 20);
+    const lovedRetailerMap = new Map(
+      (fb.lovedRetailers || []).map((r) => [r.retailer.toLowerCase(), r.count])
+    );
+    const rejectedRetailerMap = new Map(
+      (fb.rejectedRetailers || []).map((r) => [r.retailer.toLowerCase(), r])
+    );
+    const reasonTotals = fb.reasonTotals || {};
 
     const budgetMin = styleProfile.budgetMin || styleProfile.budget_min || 50;
     const budgetMax = styleProfile.budgetMax || styleProfile.budget_max || 500;
@@ -514,7 +574,15 @@ serve(async (req) => {
     const styleSignals = deriveStyleSignals(visualCues, vibeDescription);
     const brandShortlists: Record<string, BrandEntry[]> = {};
     for (const cat of CATEGORIES) {
-      brandShortlists[cat] = brandsForCategory(cat, budgetMin, budgetMax, shoppingPreference, styleSignals);
+      brandShortlists[cat] = brandsForCategory(
+        cat,
+        budgetMin,
+        budgetMax,
+        shoppingPreference,
+        styleSignals,
+        lovedRetailerMap,
+        rejectedRetailerMap
+      );
     }
     const brandContextBlock = CATEGORIES.map((cat) => {
       const shortlist = brandShortlists[cat];
@@ -539,12 +607,27 @@ serve(async (req) => {
       .filter((line): line is string => line !== null);
     const silhouetteContextBlock = silhouetteLines.join("\n");
 
-    const feedbackBlock = (savedTitles.length > 0 || dismissedTitles.length > 0)
+    const REASON_LABELS: Record<string, string> = {
+      too_expensive: "too expensive",
+      not_my_style: "not their style",
+      wrong_color: "wrong color",
+      dislike_brand: "dislike the brand",
+      quality: "quality looked off",
+    };
+    const reasonEntries = Object.entries(reasonTotals).sort((a, b) => b[1] - a[1]);
+    const reasonBlock = reasonEntries.length > 0
+      ? `\n- All-time dismissal reasons: ${reasonEntries.map(([r, c]) => `${REASON_LABELS[r] || r} (${c}x)`).join(", ")}. If "too expensive" is common, lean toward the lower half of their budget rather than the upper half. If "not their style" or "wrong color" are common, favor safer, closer-to-brief interpretations over experimental ones.`
+      : "";
+    const durableNote = (lovedRetailerMap.size > 0 || rejectedRetailerMap.size > 0)
+      ? ` Durable, all-time taste memory (not just this recent list) has already been used to bias the BRAND SHORTLIST above toward brands this user saves from and to exclude ones they've repeatedly dismissed or dismissed as "dislike_brand" — trust that shortlist's ordering rather than re-deriving it.`
+      : "";
+
+    const feedbackBlock = (savedTitles.length > 0 || dismissedTitles.length > 0 || reasonEntries.length > 0)
       ? `\n\nLEARNING SIGNALS from this user's past behavior:
 ${savedTitles.length > 0 ? `- LOVED (saved to shortlist): ${savedTitles.slice(0, 12).join("; ")}` : ""}
-${dismissedTitles.length > 0 ? `- REJECTED (dismissed as "not for me"): ${dismissedTitles.slice(0, 12).join("; ")}` : ""}
+${dismissedTitles.length > 0 ? `- REJECTED (dismissed as "not for me"): ${dismissedTitles.slice(0, 12).join("; ")}` : ""}${reasonBlock}
 
-Use these signals to adjust your queries. Lean toward the colors, fabrics, silhouettes, and retailers in the LOVED list. Avoid patterns that match the REJECTED list.`
+Use these signals to adjust your queries. Lean toward the colors, fabrics, silhouettes, and retailers in the LOVED list. Avoid patterns that match the REJECTED list.${durableNote}`
       : "";
 
     const systemPrompt = `You are a personal stylist translating a user's aesthetic profile into specific Google Shopping search queries, one per clothing category.
@@ -561,11 +644,11 @@ SILHOUETTE GUIDANCE: for the categories below, these garment cuts tend to be fla
 ${silhouetteContextBlock}
 ` : ""}
 Query rules:
-- 4 to 8 words
-- For each category, look at its brand shortlist above and pick the ONE brand whose tier and aesthetic tags best match this user's aesthetic keywords, style brief, and vibe. The shortlist is already ranked by aesthetic fit, so lean toward the brands nearer the top. Lead the query with that brand's name (e.g. "Reformation floral wrap dress" rather than "floral wrap dress"). This is the most important rule: a query without a brand name should be the exception, not the default.
-- Only skip the brand name if the shortlist for that category is empty, or if none of the listed brands are even a loose match for the user's aesthetic. In that rare case, write a brand-agnostic query instead of forcing a bad fit.
-- Never invent a brand name that isn't in the shortlist provided.
-- Specific enough to return focused results, but broad enough to return several options
+- For EACH category, write ONE query PER BRAND listed in that category's shortlist above, not one query for the whole category. If a category's shortlist has 4 brands, that category needs 4 separate queries, each for a different brand, so the results end up coming from 4 different retailers instead of one retailer dominating the category.
+- Only write a single brand-agnostic query for a category if its shortlist above says there are no matching brands. Otherwise every query must have a brand.
+- Never invent a brand name that isn't in the shortlist provided for that category.
+- Each query is 4 to 8 words, and must lead with the exact brand name it's for (e.g. "Reformation floral wrap dress" rather than "floral wrap dress").
+- Specific enough to return focused results for that ONE category, but broad enough to return several options. Do not let a Tops query drift into pants/jackets/dresses phrasing, a Bottoms query drift into tops/outerwear phrasing, etc. — keep each query unambiguously about its own category's garment type.
 - Include color, silhouette, or texture cues drawn from the profile in addition to the brand name. Where silhouette guidance is given above for a category, you may name a specific flattering garment cut, like wrap, A-line, or empire waist, as part of the query.
 - Do NOT reference body size, weight, measurements, or the body type itself (e.g. never write "hourglass" or "pear shaped" in a query). Silhouette guidance should only ever surface as a garment cut term, never as a body descriptor.
 - Do NOT use em dashes
@@ -573,14 +656,14 @@ Query rules:
 - Ground queries in the occasions the user actually selected. If "Workwear" is not among their occasions, do not default to office or corporate styling, even as a "safe" choice. If they selected things like "Everyday," "Going Out," or "Loungewear," queries should reflect that instead.
 - If a named style cue or look is provided, let it meaningfully shape silhouette and styling choices in the queries, not just generic keywords.
 
-Respond with ONLY valid JSON, no preamble, no markdown, no code fences:
+Respond with ONLY valid JSON, no preamble, no markdown, no code fences. For each category, return an array with one {"brand": ..., "query": ...} object per brand in that category's shortlist (brand should be null only for the rare brand-agnostic case):
 {
-  "Tops": "query here",
-  "Bottoms": "query here",
-  "Dresses": "query here",
-  "Outerwear": "query here",
-  "Shoes": "query here",
-  "Accessories": "query here"
+  "Tops": [{"brand": "Brand Name", "query": "query here"}, ...],
+  "Bottoms": [{"brand": "Brand Name", "query": "query here"}, ...],
+  "Dresses": [{"brand": "Brand Name", "query": "query here"}, ...],
+  "Outerwear": [{"brand": "Brand Name", "query": "query here"}, ...],
+  "Shoes": [{"brand": "Brand Name", "query": "query here"}, ...],
+  "Accessories": [{"brand": "Brand Name", "query": "query here"}, ...]
 }`;
 
     const userPrompt = `User's style profile:
@@ -592,7 +675,7 @@ Budget per piece: $${budgetMin} to $${budgetMax}
 Occasions they dress for: ${occasions.length > 0 ? occasions.join(", ") : "not specified"}
 Style cues / reference looks they responded to: ${visualCues.length > 0 ? visualCues.join(", ") : "not specified"}${feedbackBlock}
 
-Generate one search query per category, choosing a brand from its shortlist as instructed.`;
+Generate one search query per brand in each category's shortlist, as instructed.`;
 
     const claudeResp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -621,35 +704,60 @@ Generate one search query per category, choosing a brand from its shortlist as i
     const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (fenceMatch) jsonStr = fenceMatch[1].trim();
 
-    const queriesByCategory: Record<string, string> = JSON.parse(jsonStr);
+    interface BrandQuery {
+      brand: string | null;
+      query: string;
+    }
+
+    const queriesByCategory: Record<string, BrandQuery[]> = JSON.parse(jsonStr);
 
     const fetchUrl = `${SUPABASE_URL}/functions/v1/fetch-products`;
 
+    // For each category, run one query PER BRAND in parallel, and keep only the top
+    // (post-filter) result from each — so a category's results are diversified across up
+    // to BRANDS_PER_CATEGORY different retailers instead of one retailer dominating it.
     const categoryResults: CategoryRecs[] = await Promise.all(
       CATEGORIES.map(async (cat) => {
-        const query = queriesByCategory[cat] || cat.toLowerCase();
-        try {
-          const resp = await fetch(fetchUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-            },
-            body: JSON.stringify({
-              query,
-              budgetMin,
-              budgetMax,
-              limit: 8,
-            }),
-          });
-          if (resp.ok) {
-            const data = await resp.json();
-            return { category: cat, query, products: data.products || [] };
-          }
-        } catch (err) {
-          console.error(`Failed to fetch ${cat}:`, err);
-        }
-        return { category: cat, query, products: [] };
+        const rawQueries = queriesByCategory[cat];
+        const brandQueries: BrandQuery[] =
+          Array.isArray(rawQueries) && rawQueries.length > 0
+            ? rawQueries
+            : [{ brand: null, query: cat.toLowerCase() }];
+
+        const perBrandResults = await Promise.all(
+          brandQueries.map(async (bq): Promise<Product | null> => {
+            try {
+              const resp = await fetch(fetchUrl, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+                },
+                body: JSON.stringify({
+                  query: bq.query,
+                  budgetMin,
+                  budgetMax,
+                  limit: 4,
+                }),
+              });
+              if (resp.ok) {
+                const data = await resp.json();
+                const candidates: Product[] = data.products || [];
+                // Prefer the top result that actually looks like this category; fall back
+                // to the raw top result rather than dropping the brand entirely.
+                const filtered = candidates.filter((p) => passesCategoryFilter(p.title, cat));
+                return filtered[0] || candidates[0] || null;
+              }
+            } catch (err) {
+              console.error(`Failed to fetch ${cat} / ${bq.brand ?? "brand-agnostic"}:`, err);
+            }
+            return null;
+          })
+        );
+
+        const products = perBrandResults.filter((p): p is Product => p !== null);
+        const queryDisplay = brandQueries.map((bq) => bq.query).join(" | ");
+        return { category: cat, query: queryDisplay, products };
       })
     );
 

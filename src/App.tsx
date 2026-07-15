@@ -16,6 +16,7 @@ import ConnectEmail from "./pages/ConnectEmail.tsx";
 import Planner from "./pages/Planner.tsx";
 import Guide from "./pages/Guide.tsx";
 import ForYou from "./pages/ForYou.tsx";
+import Saved from "./pages/Saved.tsx";
 import About from "./pages/About.tsx";
 import Pricing from "./pages/Pricing.tsx";
 import Privacy from "./pages/Privacy.tsx";
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="/planner" element={<ProtectedRoute><Planner /></ProtectedRoute>} />
               <Route path="/guide" element={<ProtectedRoute><Guide /></ProtectedRoute>} />
               <Route path="/for-you" element={<ProtectedRoute><ForYou /></ProtectedRoute>} />
+              <Route path="/saved" element={<ProtectedRoute><Saved /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

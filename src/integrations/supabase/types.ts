@@ -275,6 +275,7 @@ export type Database = {
           id: string
           product_link: string
           product_title: string | null
+          reason: string | null
           retailer: string | null
           user_id: string
         }
@@ -284,6 +285,7 @@ export type Database = {
           id?: string
           product_link: string
           product_title?: string | null
+          reason?: string | null
           retailer?: string | null
           user_id: string
         }
@@ -293,6 +295,7 @@ export type Database = {
           id?: string
           product_link?: string
           product_title?: string | null
+          reason?: string | null
           retailer?: string | null
           user_id?: string
         }

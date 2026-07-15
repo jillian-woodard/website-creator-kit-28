@@ -3,11 +3,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
+export const DISMISS_REASONS = [
+  { value: "too_expensive", label: "Too expensive" },
+  { value: "not_my_style", label: "Not my style" },
+  { value: "wrong_color", label: "Wrong color" },
+  { value: "dislike_brand", label: "Don't like the brand" },
+  { value: "quality", label: "Quality looks off" },
+] as const;
+
+export type DismissReason = (typeof DISMISS_REASONS)[number]["value"];
+
 export interface DismissableProduct {
   title: string;
   link: string;
   retailer?: string;
   category?: string;
+  reason?: DismissReason;
 }
 
 export const useDismissedItems = () => {
@@ -52,6 +63,7 @@ export const useDismissedItems = () => {
           product_title: product.title,
           category: product.category,
           retailer: product.retailer,
+          reason: product.reason ?? null,
         });
         if (error && !String(error.message).includes("duplicate")) throw error;
         toast.success("Got it — we'll show you less like this");
