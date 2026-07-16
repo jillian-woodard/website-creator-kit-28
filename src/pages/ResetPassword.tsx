@@ -34,11 +34,11 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
-        <h1 className="text-4xl font-serif text-foreground mb-2 text-center">
-          Set a New Password
+      <div className="w-full max-w-md bg-card border border-border rounded-3xl shadow-soft-lg p-8 md:p-10">
+        <h1 className="text-3xl font-serif font-medium text-foreground mb-2 text-center">
+          Set a new password
         </h1>
-        <p className="text-muted-foreground font-sans text-center mb-8">
+        <p className="text-secondary font-sans text-center mb-8">
           Choose a new password for your account.
         </p>
 
@@ -50,7 +50,7 @@ const ResetPassword = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="rounded-none border-border font-sans"
+            className="font-sans"
           />
           <Input
             type="password"
@@ -59,14 +59,14 @@ const ResetPassword = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             minLength={6}
-            className="rounded-none border-border font-sans"
+            className="font-sans"
           />
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-none py-6 text-sm font-sans font-semibold uppercase tracking-[0.2em]"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-full py-6 text-sm font-sans"
           >
-            {loading ? "..." : "Update Password"}
+            {loading ? "..." : "Update password"}
           </Button>
         </form>
       </div>

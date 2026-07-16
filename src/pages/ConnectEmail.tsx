@@ -235,7 +235,7 @@ const ConnectEmail = () => {
             <ArrowLeft className="w-4 h-4" />
             Closet
           </button>
-          <span className="font-serif text-lg text-foreground">Import From Email</span>
+          <span className="font-serif text-lg text-foreground">Import from email</span>
           <div className="w-16" />
         </div>
       </header>
@@ -244,20 +244,20 @@ const ConnectEmail = () => {
         {exchanging ? (
           <div className="text-center py-20">
             <Loader2 className="w-6 h-6 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-muted-foreground font-sans">Connecting your email...</p>
+            <p className="text-secondary font-sans">Connecting your email...</p>
           </div>
         ) : !connection ? (
-          <div className="border border-border bg-card p-8 text-center space-y-4">
+          <div className="bg-card border border-border rounded-3xl shadow-soft p-8 text-center space-y-4">
             <Mail className="w-8 h-8 mx-auto text-primary" />
-            <h1 className="font-serif text-2xl text-foreground">Skip the manual entry</h1>
-            <p className="text-sm text-muted-foreground font-sans max-w-md mx-auto">
+            <h1 className="font-serif text-2xl font-medium text-foreground">Skip the manual entry</h1>
+            <p className="text-sm text-secondary font-sans max-w-md mx-auto">
               Connect Gmail and we'll scan for recent clothing order confirmations, then show you what we
               found so you can pick what goes into your closet. We only read receipts, nothing else, and you
               approve every item before it's added.
             </p>
             <Button
               onClick={handleConnect}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm gap-2"
             >
               <Mail className="w-3.5 h-3.5" />
               Connect Gmail
@@ -265,9 +265,9 @@ const ConnectEmail = () => {
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-8 border border-border bg-card p-4">
+            <div className="flex items-center justify-between mb-8 bg-card border border-border rounded-2xl shadow-soft p-4">
               <div>
-                <p className="text-xs text-muted-foreground font-sans uppercase tracking-wider mb-1">Connected</p>
+                <p className="text-xs text-muted-foreground font-sans mb-1">Connected</p>
                 <p className="font-sans text-sm text-foreground">{connection.email_address}</p>
               </div>
               <Button
@@ -275,7 +275,7 @@ const ConnectEmail = () => {
                 size="sm"
                 onClick={handleScan}
                 disabled={scanning}
-                className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+                className="rounded-full font-sans text-sm gap-2"
               >
                 {scanning ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -287,34 +287,34 @@ const ConnectEmail = () => {
             </div>
 
             {loadingPending ? (
-              <p className="text-muted-foreground font-sans text-sm">Loading...</p>
+              <p className="text-secondary font-sans text-sm">Loading...</p>
             ) : pending.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-muted-foreground font-sans mb-1">Nothing to review right now.</p>
+                <p className="text-secondary font-sans mb-1">Nothing to review right now.</p>
                 <p className="text-sm text-muted-foreground/60 font-sans">
                   Run a scan, or check back after your next order confirmation lands.
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
-                <p className="text-xs text-muted-foreground font-sans uppercase tracking-wider">
+                <p className="text-xs text-muted-foreground font-sans">
                   {pending.length} item{pending.length === 1 ? "" : "s"} to review
                 </p>
                 {pending.map((item) => (
-                  <div key={item.id} className="border border-border bg-card p-5 space-y-3">
+                  <div key={item.id} className="bg-card border border-border rounded-2xl shadow-soft p-5 space-y-3">
                     <div className="space-y-3">
                       <div className="grid sm:grid-cols-2 gap-3">
                         <Input
                           value={(getField(item, "item_name") as string) || ""}
                           onChange={(e) => setField(item.id, "item_name", e.target.value)}
                           placeholder="Item name"
-                          className="rounded-none font-sans"
+                          className="font-sans"
                         />
                         <Select
                           value={(getField(item, "category") as string) || ""}
                           onValueChange={(v) => setField(item.id, "category", v)}
                         >
-                          <SelectTrigger className="rounded-none font-sans">
+                          <SelectTrigger className="font-sans">
                             <SelectValue placeholder="Category" />
                           </SelectTrigger>
                           <SelectContent>
@@ -331,13 +331,13 @@ const ConnectEmail = () => {
                           value={(getField(item, "brand") as string) || ""}
                           onChange={(e) => setField(item.id, "brand", e.target.value)}
                           placeholder="Brand"
-                          className="rounded-none font-sans"
+                          className="font-sans"
                         />
                         <Input
                           value={(getField(item, "color") as string) || ""}
                           onChange={(e) => setField(item.id, "color", e.target.value)}
                           placeholder="Color"
-                          className="rounded-none font-sans"
+                          className="font-sans"
                         />
                       </div>
                       <p className="text-xs text-muted-foreground font-sans">
@@ -351,17 +351,17 @@ const ConnectEmail = () => {
                         size="sm"
                         onClick={() => handleAddToCloset(item)}
                         disabled={savingId === item.id}
-                        className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm gap-2"
                       >
                         <Check className="w-3.5 h-3.5" />
-                        Add to Closet
+                        Add to closet
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => handleDismiss(item)}
                         disabled={savingId === item.id}
-                        className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+                        className="rounded-full font-sans text-sm gap-2"
                       >
                         <X className="w-3.5 h-3.5" />
                         Dismiss

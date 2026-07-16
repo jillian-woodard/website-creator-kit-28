@@ -138,7 +138,7 @@ const BodyStep = () => {
       {data.bodyInputMethod === "manual" && (
         <div className="bg-card border border-border rounded-lg p-8 space-y-5">
           <p className="text-sm text-muted-foreground font-sans font-light">
-            💡 Your measurements help us suggest what size to order from specific brands and stores. No more guessing.
+            Your measurements help us suggest what size to order from specific brands and stores. No more guessing.
           </p>
           {(["bust", "waist", "hips"] as const).map((field) => (
             <div key={field}>

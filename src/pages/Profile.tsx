@@ -240,7 +240,7 @@ const Profile = () => {
             <ArrowLeft className="w-4 h-4" />
             Back to interview
           </button>
-          <span className="font-serif text-lg text-foreground">Your Style Profile</span>
+          <span className="font-serif text-lg text-foreground">My Style</span>
           <div className="flex gap-2">
             <button
               type="button"
@@ -261,19 +261,19 @@ const Profile = () => {
       <main className="container mx-auto px-6 lg:px-16 py-12 max-w-5xl">
         {/* Style Brief */}
         <section className="mb-16 animate-fade-in-up">
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3 font-sans">
-            Your Style Brief
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
+            Style understanding
           </p>
-          <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-6 leading-tight">
+          <h1 className="text-3xl md:text-5xl font-serif font-medium text-foreground mb-6 leading-tight">
             {keywords.slice(0, 2).join(" · ")}
           </h1>
-          <p className="text-lg text-muted-foreground font-sans font-light leading-relaxed max-w-3xl">
+          <p className="text-lg text-secondary font-sans font-light leading-relaxed max-w-3xl">
             {brief}
           </p>
           {vibeDescription && (
-            <div className="mt-6 p-4 bg-card rounded-lg border border-border">
-              <p className="text-xs text-muted-foreground font-sans uppercase tracking-wider mb-1">
-                Based on your input
+            <div className="mt-6 p-5 bg-card rounded-2xl border border-border shadow-soft max-w-2xl">
+              <p className="text-xs text-muted-foreground font-sans mb-1.5">
+                Based on your own words
               </p>
               <p className="text-sm text-foreground font-sans italic">"{vibeDescription}"</p>
             </div>
@@ -284,13 +284,13 @@ const Profile = () => {
         <div className="mb-16">
           <section className="animate-fade-in-up opacity-0 animation-delay-100">
             <h2 className="text-xl font-serif text-foreground mb-4">
-              {visualCues.length > 0 ? "Your Style Cues" : "Aesthetic Keywords"}
+              {visualCues.length > 0 ? "Your style cues" : "Aesthetic keywords"}
             </h2>
             <div className="flex flex-wrap gap-2">
               {(visualCues.length > 0 ? visualCues : keywords).map((kw) => (
                 <span
                   key={kw}
-                  className="px-4 py-2 rounded-full border border-primary/30 bg-primary/5 text-sm font-sans text-foreground"
+                  className="px-4 py-2 rounded-full bg-muted text-sm font-sans text-foreground"
                 >
                   {kw}
                 </span>
@@ -302,10 +302,10 @@ const Profile = () => {
         {/* Silhouettes & Details */}
         <div className="grid md:grid-cols-4 gap-8 mb-16">
           <section className="animate-fade-in-up opacity-0 animation-delay-200">
-            <h2 className="text-xl font-serif text-foreground mb-4">Key Silhouettes</h2>
+            <h2 className="text-xl font-serif text-foreground mb-4">Key silhouettes</h2>
             <ul className="space-y-2">
               {silhouettes.map((s) => (
-                <li key={s} className="text-sm text-muted-foreground font-sans flex items-center gap-2">
+                <li key={s} className="text-sm text-secondary font-sans flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                   {s}
                 </li>
@@ -314,20 +314,20 @@ const Profile = () => {
           </section>
 
           <section className="animate-fade-in-up opacity-0 animation-delay-300">
-            <h2 className="text-xl font-serif text-foreground mb-4">Budget Range</h2>
-            <p className="text-sm text-muted-foreground font-sans">${budgetMin} – ${budgetMax} per piece</p>
+            <h2 className="text-xl font-serif text-foreground mb-4">Budget range</h2>
+            <p className="text-sm text-secondary font-sans">${budgetMin} – ${budgetMax} per piece</p>
           </section>
 
           <section className="animate-fade-in-up opacity-0 animation-delay-400">
-            <h2 className="text-xl font-serif text-foreground mb-4">Body Input</h2>
-            <p className="text-sm text-muted-foreground font-sans capitalize">
+            <h2 className="text-xl font-serif text-foreground mb-4">Body input</h2>
+            <p className="text-sm text-secondary font-sans capitalize">
               {dbProfile?.body_input_method || contextData.bodyInputMethod || "Not specified"}
               {silhouetteType ? ` · ${silhouetteType}` : ""}
             </p>
           </section>
 
           <section className="animate-fade-in-up opacity-0 animation-delay-200">
-            <h2 className="text-xl font-serif text-foreground mb-4">Dressing For</h2>
+            <h2 className="text-xl font-serif text-foreground mb-4">Dressing for</h2>
             {occasions.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {occasions.map((o) => (
@@ -358,38 +358,38 @@ const Profile = () => {
           const wearItems = match.wear.split(",").map((s) => s.trim());
           return (
             <section className="mb-16 animate-fade-in-up opacity-0 animation-delay-300">
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-2 font-sans">
+              <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
                 Based on your {match.name} silhouette
               </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6">
-                What to wear &amp; what to avoid
+              <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground mb-6">
+                What to wear and what to avoid
               </h2>
-              <p className="text-sm text-muted-foreground font-sans mb-6 max-w-2xl">
+              <p className="text-sm text-secondary font-sans mb-6 max-w-2xl">
                 {match.desc}
               </p>
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="border border-primary/20 bg-primary/5 rounded-lg p-6">
+                <div className="bg-card border border-border rounded-3xl p-6 shadow-soft">
                   <h3 className="font-serif text-lg text-foreground mb-4 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-primary" />
                     Reach for
                   </h3>
                   <ul className="space-y-2">
                     {wearItems.map((item) => (
-                      <li key={item} className="text-sm text-muted-foreground font-sans flex items-start gap-2">
+                      <li key={item} className="text-sm text-secondary font-sans flex items-start gap-2">
                         <span className="text-primary mt-0.5">✓</span>
                         {item}
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className="border border-destructive/20 bg-destructive/5 rounded-lg p-6">
+                <div className="bg-card border border-border rounded-3xl p-6 shadow-soft">
                   <h3 className="font-serif text-lg text-foreground mb-4 flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-destructive" />
                     Avoid
                   </h3>
                   <ul className="space-y-2">
                     {skipItems.map((item) => (
-                      <li key={item} className="text-sm text-muted-foreground font-sans flex items-start gap-2">
+                      <li key={item} className="text-sm text-secondary font-sans flex items-start gap-2">
                         <span className="text-destructive mt-0.5">✕</span>
                         {item}
                       </li>
@@ -458,17 +458,17 @@ const Profile = () => {
 
           return (
             <section className="mb-16 animate-fade-in-up opacity-0 animation-delay-300">
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-2 font-sans">
+              <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
                 Based on your height
               </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6">
+              <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground mb-6">
                 Dressing for your frame
               </h2>
 
               {/* Core rule callout */}
               {coreHeightRule && (
-                <div className="border-l-4 border-primary bg-primary/5 rounded-r-lg p-5 mb-8">
-                  <p className="text-xs tracking-[0.2em] uppercase text-primary font-sans mb-2">
+                <div className="bg-card border border-border rounded-3xl p-6 shadow-soft mb-8">
+                  <p className="text-xs tracking-[0.14em] uppercase text-primary font-sans mb-2">
                     The core rule
                   </p>
                   <p className="text-base md:text-lg font-serif text-foreground leading-snug">
@@ -478,7 +478,7 @@ const Profile = () => {
               )}
 
               {showTallWomenNote && (
-                <div className="border border-primary/20 bg-primary/5 rounded-lg p-5 mb-8">
+                <div className="bg-card border border-border rounded-3xl p-6 shadow-soft mb-8">
                   <p className="text-sm font-sans text-foreground leading-relaxed">
                     <span className="font-medium">A note for tall frames:</span> you have the most
                     flexibility of any height — tall frames carry volume, length, and statement
@@ -496,12 +496,12 @@ const Profile = () => {
                 {wearTips.map((t, i) => (
                   <div
                     key={`${t.tip}-${i}`}
-                    className="border border-primary/20 bg-primary/5 rounded-lg p-5"
+                    className="bg-card border border-border rounded-2xl p-5 shadow-soft"
                   >
                     <p className="font-sans font-medium text-foreground text-sm mb-1.5">
                       {t.tip}
                     </p>
-                    <p className="text-xs text-muted-foreground font-sans leading-relaxed">
+                    <p className="text-xs text-secondary font-sans leading-relaxed">
                       {t.why}
                     </p>
                   </div>
@@ -510,7 +510,7 @@ const Profile = () => {
 
               {/* Be mindful of — expandable */}
               {avoidTips.length > 0 && (
-                <Accordion type="single" collapsible className="border border-border rounded-lg bg-card">
+                <Accordion type="single" collapsible className="border border-border rounded-2xl bg-card shadow-soft">
                   <AccordionItem value="avoid" className="border-b-0">
                     <AccordionTrigger className="px-5 hover:no-underline">
                       <span className="flex items-center gap-2 font-serif text-base text-foreground">
@@ -523,12 +523,12 @@ const Profile = () => {
                         {avoidTips.map((t, i) => (
                           <div
                             key={`${t.tip}-${i}`}
-                            className="border border-destructive/20 bg-destructive/5 rounded-lg p-4"
+                            className="bg-background border border-border rounded-2xl p-4"
                           >
                             <p className="font-sans font-medium text-foreground text-sm mb-1.5">
                               {t.tip}
                             </p>
-                            <p className="text-xs text-muted-foreground font-sans leading-relaxed">
+                            <p className="text-xs text-secondary font-sans leading-relaxed">
                               {t.why}
                             </p>
                           </div>
@@ -546,11 +546,11 @@ const Profile = () => {
         <section className="mb-16 animate-fade-in-up opacity-0 animation-delay-300">
           <div className="flex items-end justify-between mb-6 gap-4 flex-wrap">
             <div>
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-2 font-sans flex items-center gap-2">
+              <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3 flex items-center gap-2">
                 <Sparkles className="w-3.5 h-3.5" />
-                Pieces For You
+                Pieces for you
               </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+              <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground">
                 Curated to match your style
               </h2>
             </div>
@@ -576,10 +576,10 @@ const Profile = () => {
                       key={opt}
                       type="button"
                       onClick={() => setCategoryFilter(opt)}
-                      className={`px-4 py-1.5 rounded-full border text-xs font-sans uppercase tracking-wider transition-colors ${
+                      className={`px-4 py-1.5 rounded-full text-xs font-sans transition-colors ${
                         active
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/40"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {opt === "all" ? "All" : opt}
@@ -596,16 +596,16 @@ const Profile = () => {
               Finding pieces for your aesthetic…
             </div>
           ) : recs.length === 0 ? (
-            <div className="border border-border bg-card p-8 text-center">
-              <p className="text-sm text-muted-foreground font-sans mb-4">
+            <div className="bg-card border border-border rounded-3xl p-8 text-center shadow-soft">
+              <p className="text-sm text-secondary font-sans mb-4">
                 We couldn't find picks just yet.
               </p>
               <Button
                 variant="outline"
                 onClick={() => navigate("/for-you")}
-                className="font-sans"
+                className="font-sans rounded-full"
               >
-                Try For You
+                Try for you
               </Button>
             </div>
           ) : (
@@ -631,7 +631,7 @@ const Profile = () => {
                           rel="noopener noreferrer"
                           className="flex-shrink-0 w-44 md:w-52 group snap-start"
                         >
-                          <div className="aspect-[3/4] bg-muted overflow-hidden relative border border-border group-hover:border-primary/30 transition-colors">
+                          <div className="aspect-[3/4] bg-muted overflow-hidden relative rounded-2xl border border-border group-hover:border-primary/40 transition-colors shadow-soft">
                             {p.image ? (
                               <img
                                 src={p.image}
@@ -701,21 +701,19 @@ const Profile = () => {
 
         {/* Wear More. Waste Less. */}
         <section className="mb-16 animate-fade-in-up opacity-0 animation-delay-400">
-          <div className="grid md:grid-cols-[1fr_1.5fr] gap-12 items-start">
+          <div className="grid md:grid-cols-[1fr_1.5fr] gap-12 items-start bg-card border border-border rounded-3xl p-8 md:p-10 shadow-soft">
             <div>
-              <p className="text-xs font-sans font-semibold tracking-[0.3em] uppercase text-primary mb-4">
-                Wear More. Waste Less.
+              <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
+                Wear more, waste less
               </p>
-              <h2 className="text-2xl md:text-4xl font-serif font-bold uppercase text-foreground leading-[0.95]">
+              <h2 className="text-2xl md:text-4xl font-serif font-medium text-foreground leading-tight">
                 Buy once.
                 <br />
-                <span className="text-primary">Wear it
-                <br />
-                100 ways.</span>
+                Wear it 100 ways.
               </h2>
             </div>
             <div className="space-y-6">
-              <p className="text-base md:text-lg font-sans font-light text-muted-foreground leading-relaxed">
+              <p className="text-base md:text-lg font-sans font-light text-secondary leading-relaxed">
                 The average garment is worn just <span className="text-foreground font-medium">7 times</span> before
                 being discarded. We don't recommend trendy pieces that expire in a season — we recommend
                 <span className="text-foreground font-medium"> versatile investment pieces</span> that
@@ -728,13 +726,13 @@ const Profile = () => {
                   { stat: "3-in-1", label: "Avg. styling versatility" },
                 ].map((item) => (
                   <div key={item.label} className="text-center">
-                    <p className="text-xl md:text-2xl font-serif font-bold text-primary">{item.stat}</p>
+                    <p className="text-xl md:text-2xl font-serif font-medium text-primary">{item.stat}</p>
                     <p className="text-xs font-sans text-muted-foreground mt-1">{item.label}</p>
                   </div>
                 ))}
               </div>
               <blockquote className="border-l-2 border-primary/30 pl-6">
-                <p className="text-sm font-sans italic text-muted-foreground leading-relaxed">
+                <p className="text-sm font-sans italic text-secondary leading-relaxed">
                   "The most sustainable garment is the one already in your closet —
                   the second most sustainable is one you'll actually wear 100 times."
                 </p>
@@ -748,30 +746,30 @@ const Profile = () => {
 
         {/* Next Steps */}
         <section className="mb-16 animate-fade-in-up opacity-0 animation-delay-400">
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3 font-sans">
-            What's Next
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
+            What's next
           </p>
-          <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6">
+          <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground mb-6">
             Put your style to work
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <button
               onClick={() => navigate("/closet")}
-              className="border border-border bg-card p-6 text-left hover:border-primary/30 transition-all group"
+              className="bg-card border border-border rounded-3xl p-6 text-left hover:border-primary/30 transition-all shadow-soft group"
             >
               <Shirt className="w-6 h-6 text-primary mb-3" />
-              <h3 className="font-serif text-lg text-foreground mb-1">My Closet</h3>
-              <p className="text-sm text-muted-foreground font-sans font-light">
-                Add what you already own so the AI can build outfits from your wardrobe first.
+              <h3 className="font-serif text-lg text-foreground mb-1">My closet</h3>
+              <p className="text-sm text-secondary font-sans font-light">
+                Add what you already own so recommendations build outfits from your wardrobe first.
               </p>
             </button>
             <button
               onClick={() => navigate("/planner")}
-              className="border border-border bg-card p-6 text-left hover:border-primary/30 transition-all group"
+              className="bg-card border border-border rounded-3xl p-6 text-left hover:border-primary/30 transition-all shadow-soft group"
             >
               <CalendarDays className="w-6 h-6 text-primary mb-3" />
-              <h3 className="font-serif text-lg text-foreground mb-1">Plan Your Week</h3>
-              <p className="text-sm text-muted-foreground font-sans font-light">
+              <h3 className="font-serif text-lg text-foreground mb-1">Plan your week</h3>
+              <p className="text-sm text-secondary font-sans font-light">
                 Get weather-aware, occasion-matched outfits for every day of the week.
               </p>
             </button>
@@ -786,9 +784,9 @@ const Profile = () => {
               resetData();
               navigate("/");
             }}
-            className="border-border text-muted-foreground hover:text-foreground font-sans"
+            className="text-secondary hover:text-foreground font-sans rounded-full"
           >
-            Start a New Interview
+            Start a new interview
           </Button>
         </div>
       </main>

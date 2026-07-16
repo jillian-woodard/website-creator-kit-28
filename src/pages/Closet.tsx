@@ -283,6 +283,35 @@ const Closet = () => {
     setSeasons((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
   };
 
+  // Treats the closet as an intelligence layer, not just storage: estimates how many outfit
+  // combinations a piece actually unlocks, from the real counts of complementary categories
+  // already in this user's closet_items. Deliberately simple (a straight multiply of the two
+  // most relevant adjacent categories, floored at 1) rather than a true enumeration — it's a
+  // directional "this piece pulls its weight" signal, not a claim of exact outfit math.
+  const countByCategory = (cat: string) =>
+    items.filter((i) => i.category === cat.toLowerCase()).length;
+
+  const estimateOutfits = (item: ClosetItem): number => {
+    const tops = Math.max(countByCategory("Top"), 1);
+    const bottoms = Math.max(countByCategory("Bottom"), 1);
+    const shoes = Math.max(countByCategory("Shoes"), 1);
+    const outerwear = countByCategory("Outerwear") + 1; // +1 for "no outerwear"
+    switch (item.category) {
+      case "top":
+        return bottoms * shoes;
+      case "bottom":
+        return tops * shoes;
+      case "dress":
+        return shoes * outerwear;
+      case "outerwear":
+        return tops * bottoms;
+      case "shoes":
+        return tops * bottoms;
+      default:
+        return tops * bottoms;
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -302,34 +331,34 @@ const Closet = () => {
             <ArrowLeft className="w-4 h-4" />
             Profile
           </button>
-          <span className="font-serif text-lg text-foreground">My Closet</span>
+          <span className="font-serif text-lg text-foreground">My closet</span>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigate("/closet/connect-email")}
-              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+              className="rounded-full font-sans text-sm gap-2"
             >
               <Mail className="w-3.5 h-3.5" />
-              Import From Email
+              Import from email
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowMix(!showMix)}
-              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+              className="rounded-full font-sans text-sm gap-2"
             >
               <Wand2 className="w-3.5 h-3.5" />
-              Mix My Closet
+              Mix my closet
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigate("/planner")}
-              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+              className="rounded-full font-sans text-sm gap-2"
             >
               <CalendarDays className="w-3.5 h-3.5" />
-              Plan Week
+              Plan week
             </Button>
           </div>
         </div>
@@ -338,42 +367,42 @@ const Closet = () => {
       <main className="container mx-auto px-6 lg:px-16 py-12 max-w-5xl">
         <div className="flex items-baseline justify-between mb-8">
           <div>
-            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-2 font-sans">
-              Your Wardrobe
+            <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
+              Your wardrobe
             </p>
-            <h1 className="text-3xl md:text-4xl font-serif text-foreground">
+            <h1 className="text-3xl md:text-4xl font-serif font-medium text-foreground">
               {items.length} {items.length === 1 ? "piece" : "pieces"}
             </h1>
           </div>
           <Button
             onClick={() => setShowAdd(!showAdd)}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm gap-2"
           >
             {showAdd ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-            {showAdd ? "Cancel" : "Add Item"}
+            {showAdd ? "Cancel" : "Add item"}
           </Button>
         </div>
 
         {/* Mix My Closet */}
         {showMix && (
-          <div className="border border-border bg-card p-6 mb-10 space-y-4 animate-fade-in">
+          <div className="bg-card border border-border rounded-3xl shadow-soft p-6 mb-10 space-y-4 animate-fade-in">
             <div>
-              <h2 className="font-serif text-xl text-foreground mb-1">Mix My Closet</h2>
-              <p className="text-sm text-muted-foreground font-sans">
+              <h2 className="font-serif text-xl text-foreground mb-1">Mix my closet</h2>
+              <p className="text-sm text-secondary font-sans">
                 Pick an occasion and we'll put together outfits from pieces you already own. No new
                 purchases.
               </p>
             </div>
 
             {items.length < 2 ? (
-              <p className="text-sm text-muted-foreground font-sans">
+              <p className="text-sm text-secondary font-sans">
                 Add at least 2 items to your closet before mixing outfits.
               </p>
             ) : (
               <>
                 <div className="flex flex-wrap items-center gap-3">
                   <Select value={mixOccasion} onValueChange={setMixOccasion}>
-                    <SelectTrigger className="rounded-none font-sans w-48">
+                    <SelectTrigger className="font-sans w-48 rounded-xl">
                       <SelectValue placeholder="Occasion" />
                     </SelectTrigger>
                     <SelectContent>
@@ -387,7 +416,7 @@ const Closet = () => {
                   <Button
                     onClick={handleMixOutfits}
                     disabled={!mixOccasion || mixLoading}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm gap-2"
                   >
                     {mixLoading ? (
                       <>
@@ -395,7 +424,7 @@ const Closet = () => {
                         Building...
                       </>
                     ) : (
-                      "Build Outfits"
+                      "Build outfits"
                     )}
                   </Button>
                 </div>
@@ -403,13 +432,13 @@ const Closet = () => {
                 {mixOutfits && mixOutfits.length > 0 && (
                   <div className="grid sm:grid-cols-2 gap-4 pt-2">
                     {mixOutfits.map((outfit, idx) => (
-                      <div key={idx} className="border border-border p-4 space-y-3">
+                      <div key={idx} className="bg-background border border-border rounded-2xl p-4 space-y-3">
                         <div className="flex flex-wrap gap-3">
                           {outfit.items.map((outfitItem) => {
                             const match = findItemByName(outfitItem.name);
                             return (
                               <div key={outfitItem.name} className="flex flex-col items-center w-16">
-                                <div className="w-16 h-16 border border-border bg-muted flex items-center justify-center overflow-hidden mb-1">
+                                <div className="w-16 h-16 rounded-xl border border-border bg-muted flex items-center justify-center overflow-hidden mb-1">
                                   {match?.image_url ? (
                                     <img
                                       src={match.image_url}
@@ -453,12 +482,12 @@ const Closet = () => {
         {showAdd && (
           <form
             onSubmit={handleAdd}
-            className="border border-border bg-card p-6 mb-10 space-y-4 animate-fade-in"
+            className="bg-card border border-border rounded-3xl shadow-soft p-6 mb-10 space-y-4 animate-fade-in"
           >
             {/* Photo upload — moved to top so AI tagging fires first */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-sans text-muted-foreground uppercase tracking-wider">
+                <p className="text-xs font-sans text-muted-foreground">
                   Photo
                 </p>
                 {tagging && (
@@ -475,7 +504,7 @@ const Closet = () => {
                 )}
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
-                <div className="w-20 h-20 border border-dashed border-border flex items-center justify-center bg-muted/30 overflow-hidden">
+                <div className="w-20 h-20 rounded-2xl border border-dashed border-border flex items-center justify-center bg-muted/30 overflow-hidden">
                   {imagePreview ? (
                     <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
@@ -495,10 +524,10 @@ const Closet = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="rounded-none font-sans"
+                className="font-sans"
               />
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="rounded-none font-sans">
+                <SelectTrigger className="font-sans">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -515,19 +544,19 @@ const Closet = () => {
                 placeholder="Color (e.g. Navy)"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="rounded-none font-sans"
+                className="font-sans"
               />
               <Input
                 placeholder="Brand (optional)"
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                className="rounded-none font-sans"
+                className="font-sans"
               />
             </div>
 
             {/* Seasons */}
             <div>
-              <p className="text-xs font-sans text-muted-foreground uppercase tracking-wider mb-2">
+              <p className="text-xs font-sans text-muted-foreground mb-2">
                 Seasons
               </p>
               <div className="flex gap-2">
@@ -536,10 +565,10 @@ const Closet = () => {
                     key={s}
                     type="button"
                     onClick={() => toggleSeason(s)}
-                    className={`px-3 py-1.5 text-xs font-sans rounded-none border transition-colors ${
+                    className={`px-3 py-1.5 text-xs font-sans rounded-full transition-colors ${
                       seasons.includes(s)
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border text-muted-foreground hover:border-primary/30"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {s}
@@ -552,15 +581,15 @@ const Closet = () => {
               placeholder="Notes (optional)"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="rounded-none font-sans"
+              className="font-sans"
             />
 
             <Button
               type="submit"
               disabled={uploading || tagging || !name || !category}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none font-sans text-xs uppercase tracking-wider"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm"
             >
-              {uploading ? "Adding..." : "Add to Closet"}
+              {uploading ? "Adding..." : "Add to closet"}
             </Button>
           </form>
         )}
@@ -568,53 +597,61 @@ const Closet = () => {
         {/* Items Grid */}
         {items.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-muted-foreground font-sans mb-2">Your closet is empty.</p>
+            <p className="text-secondary font-sans mb-2">Your closet is empty.</p>
             <p className="text-sm text-muted-foreground/60 font-sans">
-              Add items you already own so the planner can mix them into your outfits.
+              Add items you already own so recommendations and outfits build from your wardrobe first.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="group border border-border bg-card overflow-hidden hover:border-primary/30 transition-all"
-              >
-                <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden">
-                  {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className="text-xs text-muted-foreground font-sans uppercase tracking-wider">
-                      {item.category}
-                    </span>
-                  )}
-                </div>
-                <div className="p-3">
-                  {item.brand && (
-                    <p className="text-[10px] text-muted-foreground font-sans uppercase tracking-wider">
-                      {item.brand}
-                    </p>
-                  )}
-                  <p className="text-sm font-sans text-foreground font-medium truncate">{item.name}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] text-muted-foreground font-sans capitalize">
-                      {item.color || item.category}
-                    </span>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {items.map((item) => {
+              const outfitCount = items.length >= 2 ? estimateOutfits(item) : null;
+              return (
+                <div
+                  key={item.id}
+                  className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition-all shadow-soft"
+                >
+                  <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden relative">
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-xs text-muted-foreground font-sans capitalize">
+                        {item.category}
+                      </span>
+                    )}
+                    {outfitCount !== null && outfitCount > 1 && (
+                      <span className="absolute bottom-2 left-2 text-[11px] font-sans px-2.5 py-1 rounded-full bg-background/90 backdrop-blur-sm text-foreground shadow-sm">
+                        Unlocks {outfitCount} outfits
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-3.5">
+                    {item.brand && (
+                      <p className="text-[11px] text-muted-foreground font-sans">
+                        {item.brand}
+                      </p>
+                    )}
+                    <p className="text-sm font-sans text-foreground font-medium truncate">{item.name}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-[11px] text-muted-foreground font-sans capitalize">
+                        {item.color || item.category}
+                      </span>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>

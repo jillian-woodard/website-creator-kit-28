@@ -46,7 +46,7 @@ const Pricing = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-muted-foreground font-sans text-sm uppercase tracking-[0.2em]">
+        <div className="text-muted-foreground font-sans text-sm">
           Loading…
         </div>
       </div>
@@ -56,44 +56,44 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-md text-center">
-        <p className="text-xs font-sans uppercase tracking-[0.3em] text-muted-foreground mb-4">
-          Styling Companion
+        <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
+          Figure
         </p>
-        <h1 className="text-4xl font-serif text-foreground mb-4">
-          Figure out what to buy
+        <h1 className="text-4xl font-serif font-medium text-foreground mb-4">
+          Understand your style.
         </h1>
-        <p className="text-muted-foreground font-sans mb-10 leading-relaxed">
-          Your AI-powered closet, outfit planner, and personal style guide, all in one place.
+        <p className="text-secondary font-sans mb-10 leading-relaxed">
+          Your style profile, digital closet, trip planning, and personalized recommendations, all in one place.
         </p>
 
-        <div className="border border-border p-8 mb-8">
-          <p className="text-xs font-sans uppercase tracking-[0.3em] text-muted-foreground mb-2">
-            Full Access
+        <div className="bg-card border border-border rounded-3xl shadow-soft-lg p-8 mb-8">
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
+            Full access
           </p>
           <div className="flex items-baseline justify-center gap-1 mb-6">
-            <span className="text-5xl font-serif text-foreground">$9</span>
+            <span className="text-5xl font-serif font-medium text-foreground">$9</span>
             <span className="text-muted-foreground font-sans text-sm">/month</span>
           </div>
 
-          <ul className="text-sm font-sans text-muted-foreground space-y-3 mb-8 text-left">
+          <ul className="text-sm font-sans text-secondary space-y-3 mb-8 text-left">
             <li className="flex items-center gap-3">
-              <span className="text-foreground">→</span>
-              AI style profile & interview
+              <span className="text-primary">→</span>
+              Style interview and understanding
             </li>
             <li className="flex items-center gap-3">
-              <span className="text-foreground">→</span>
+              <span className="text-primary">→</span>
               Digital closet with smart tagging
             </li>
             <li className="flex items-center gap-3">
-              <span className="text-foreground">→</span>
-              Outfit planner & calendar
+              <span className="text-primary">→</span>
+              Trip planning and outfit calendar
             </li>
             <li className="flex items-center gap-3">
-              <span className="text-foreground">→</span>
-              Personalized "For You" recs
+              <span className="text-primary">→</span>
+              Personalized "For you" recommendations
             </li>
             <li className="flex items-center gap-3">
-              <span className="text-foreground">→</span>
+              <span className="text-primary">→</span>
               Style guides curated to you
             </li>
           </ul>
@@ -101,9 +101,9 @@ const Pricing = () => {
           <Button
             onClick={handleSubscribe}
             disabled={checkoutLoading}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-none py-6 text-sm font-sans font-semibold uppercase tracking-[0.2em]"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-full py-6 text-sm font-sans"
           >
-            {checkoutLoading ? "Redirecting…" : "Start Subscription"}
+            {checkoutLoading ? "Redirecting…" : "Start subscription"}
           </Button>
         </div>
 

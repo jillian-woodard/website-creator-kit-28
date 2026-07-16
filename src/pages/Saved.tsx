@@ -84,7 +84,7 @@ const Saved = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
         <Loader2 className="w-8 h-8 animate-spin text-primary mb-6" />
-        <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-sans">
+        <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary">
           Loading your shortlist
         </p>
       </div>
@@ -100,19 +100,19 @@ const Saved = () => {
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-sans text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
-            For You
+            For you
           </button>
-          <span className="font-serif text-lg text-foreground">Your Shortlist</span>
+          <span className="font-serif text-lg text-foreground">Your shortlist</span>
           <div className="w-20" />
         </div>
       </header>
 
       <main className="container mx-auto px-6 lg:px-16 py-12 max-w-6xl">
         <div className="mb-8">
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-2 font-sans">
-            Saved Pieces
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
+            Saved pieces
           </p>
-          <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-3">
+          <h1 className="text-3xl md:text-5xl font-serif font-medium text-foreground mb-3">
             {items.length} {items.length === 1 ? "piece" : "pieces"} saved
           </h1>
         </div>
@@ -123,10 +123,10 @@ const Saved = () => {
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(cat)}
-                className={`px-4 py-1.5 text-xs font-sans uppercase tracking-wider rounded-none border transition-colors ${
+                className={`px-4 py-1.5 text-sm font-sans rounded-full transition-colors ${
                   categoryFilter === cat
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-muted-foreground hover:border-primary/30"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {cat}
@@ -137,7 +137,7 @@ const Saved = () => {
 
         {visibleItems.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-muted-foreground font-sans mb-2">
+            <p className="text-secondary font-sans mb-2">
               Nothing saved yet.
             </p>
             <p className="text-sm text-muted-foreground/60 font-sans mb-6">
@@ -146,7 +146,7 @@ const Saved = () => {
             <Button
               variant="outline"
               onClick={() => navigate("/for-you")}
-              className="rounded-none font-sans text-xs uppercase tracking-wider"
+              className="rounded-full font-sans text-sm"
             >
               Back to your picks
             </Button>
@@ -161,7 +161,7 @@ const Saved = () => {
                 rel="noopener noreferrer"
                 className="group"
               >
-                <div className="aspect-[3/4] bg-muted overflow-hidden relative border border-border group-hover:border-primary/30 transition-colors">
+                <div className="aspect-[3/4] bg-muted overflow-hidden relative rounded-2xl border border-border group-hover:border-primary/40 transition-colors shadow-soft">
                   {item.image ? (
                     <img
                       src={item.image}
@@ -195,7 +195,7 @@ const Saved = () => {
                   </div>
                 </div>
                 <div className="pt-3">
-                  <p className="text-[10px] font-sans text-muted-foreground uppercase tracking-wider truncate">
+                  <p className="text-[11px] font-sans text-muted-foreground truncate">
                     {item.retailer || "Retailer"}
                   </p>
                   <p className="text-sm font-sans text-foreground leading-tight mt-0.5 line-clamp-2">

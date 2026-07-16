@@ -14,8 +14,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ["Syne", "system-ui", "sans-serif"],
-        sans: ["DM Sans", "system-ui", "sans-serif"],
+        serif: ["Fraunces", "Georgia", "serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+      },
+      boxShadow: {
+        soft: "0 1px 2px rgba(30, 26, 20, 0.03), 0 6px 20px rgba(30, 26, 20, 0.05)",
+        "soft-lg": "0 2px 4px rgba(30, 26, 20, 0.04), 0 16px 40px rgba(30, 26, 20, 0.08)",
       },
       colors: {
         border: "hsl(var(--border))",

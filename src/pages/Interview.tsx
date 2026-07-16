@@ -189,7 +189,7 @@ const Interview = () => {
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
-          <span className="font-serif text-lg text-foreground">Style Interview</span>
+          <span className="font-serif text-lg text-foreground">Style interview</span>
           <span className="text-sm text-muted-foreground font-sans">
             {step + 1} of {STEPS.length}
           </span>
@@ -221,11 +221,11 @@ const Interview = () => {
         <div className="container mx-auto px-6 py-4 flex justify-end gap-3">
           {step !== 2 && step !== 3 && step !== 5 && step !== 6 && (
             <Button
-              variant="outline"
+              variant="ghost"
               size="lg"
               onClick={next}
               disabled={isWorking}
-              className="border-border text-muted-foreground hover:text-foreground px-8 py-5 text-base font-sans tracking-wide"
+              className="text-secondary hover:text-foreground px-6 py-5 text-sm font-sans rounded-full"
             >
               Skip
             </Button>
@@ -234,7 +234,7 @@ const Interview = () => {
             size="lg"
             onClick={next}
             disabled={!canProceed() || isWorking}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-5 text-base font-sans tracking-wide disabled:opacity-40"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 px-9 py-5 text-sm font-sans rounded-full disabled:opacity-40"
           >
             {saving
               ? "Saving..."

@@ -195,7 +195,7 @@ const Planner = () => {
             <ArrowLeft className="w-4 h-4" />
             Closet
           </button>
-          <span className="font-serif text-lg text-foreground">Weekly Planner</span>
+          <span className="font-serif text-lg text-foreground">Trip planning</span>
           <div className="w-16" />
         </div>
       </header>
@@ -203,20 +203,20 @@ const Planner = () => {
       <main className="container mx-auto px-6 lg:px-16 py-12 max-w-5xl">
         {/* City Search */}
         <section className="mb-10">
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3 font-sans">
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
             Step 1 — Location
           </p>
-          <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">Where are you this week?</h2>
+          <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground mb-4">Where are you this week?</h2>
           <div className="relative max-w-md">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search city..."
               value={cityQuery}
               onChange={(e) => handleCityInput(e.target.value)}
-              className="pl-10 rounded-none font-sans"
+              className="pl-10 font-sans"
             />
             {cityResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 bg-card border border-border mt-1 z-20 shadow-lg">
+              <div className="absolute top-full left-0 right-0 bg-card border border-border rounded-2xl mt-2 z-20 shadow-soft-lg overflow-hidden">
                 {cityResults.map((c, i) => (
                   <button
                     key={i}
@@ -235,10 +235,10 @@ const Planner = () => {
         {days.length > 0 && (
           <>
             <section className="mb-10">
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3 font-sans">
+              <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
                 Step 2 — Tag your week
               </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6">
+              <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground mb-6">
                 What's on the agenda?
               </h2>
 
@@ -246,7 +246,7 @@ const Planner = () => {
                 {days.map((day, i) => (
                   <div
                     key={day.date}
-                    className="border border-border bg-card p-4 flex flex-col sm:flex-row sm:items-center gap-4"
+                    className="bg-card border border-border rounded-2xl shadow-soft p-4 flex flex-col sm:flex-row sm:items-center gap-4"
                   >
                     <div className="flex items-center gap-3 min-w-[180px]">
                       <div className="text-muted-foreground">{weatherIcon(day.condition)}</div>
@@ -258,7 +258,7 @@ const Planner = () => {
                       </div>
                     </div>
                     <Select value={day.occasion} onValueChange={(v) => setOccasion(i, v)}>
-                      <SelectTrigger className="rounded-none font-sans flex-1 max-w-[200px]">
+                      <SelectTrigger className="font-sans flex-1 max-w-[200px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -276,9 +276,9 @@ const Planner = () => {
                         {day.outfit.items.map((item, j) => (
                           <span
                             key={j}
-                            className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-sans rounded-sm ${
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-full ${
                               item.fromCloset
-                                ? "bg-primary/10 text-primary border border-primary/20"
+                                ? "bg-primary/10 text-primary"
                                 : "bg-muted text-muted-foreground"
                             }`}
                           >
@@ -326,22 +326,27 @@ const Planner = () => {
               </div>
             </section>
 
-            {/* Closet summary */}
-            {closetItems.length > 0 && (
-              <div className="mb-8 p-4 bg-card border border-border">
-                <p className="text-xs font-sans text-muted-foreground uppercase tracking-wider mb-1">
-                  Your Closet
+            {/* Closet summary — wardrobe-first framing: what you own is checked before anything new */}
+            <div className="mb-8 bg-card border border-border rounded-2xl shadow-soft p-5 flex items-start gap-3">
+              <Shirt className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-sans text-foreground font-medium mb-0.5">
+                  {closetItems.length > 0
+                    ? `Starting from your ${closetItems.length}-piece closet`
+                    : "Your closet is empty"}
                 </p>
-                <p className="text-sm font-sans text-foreground">
-                  {closetItems.length} items available to mix in — AI will prioritize what you already own.
+                <p className="text-sm font-sans text-secondary">
+                  {closetItems.length > 0
+                    ? "Outfits are built from what you already own first — only what's missing gets a shoppable suggestion."
+                    : "Add a few pieces to your closet so outfits can be built from what you own before anything new is suggested."}
                 </p>
               </div>
-            )}
+            </div>
 
             <Button
               onClick={generateOutfits}
               disabled={generating}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-10 py-6 text-sm font-sans font-semibold uppercase tracking-[0.2em] gap-3"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-sm font-sans gap-3"
             >
               {generating ? (
                 <>
@@ -349,20 +354,20 @@ const Planner = () => {
                   Generating...
                 </>
               ) : (
-                "Generate Outfits"
+                "Generate outfits"
               )}
             </Button>
 
             {/* Styling tips */}
             {days.some((d) => d.outfit?.stylingTip) && (
               <section className="mt-12">
-                <h3 className="text-xl font-serif text-foreground mb-4">Styling Notes</h3>
+                <h3 className="text-xl font-serif text-foreground mb-4">Styling notes</h3>
                 <div className="space-y-3">
                   {days
                     .filter((d) => d.outfit?.stylingTip)
                     .map((d) => (
-                      <div key={d.date} className="border-l-2 border-primary/30 pl-4">
-                        <p className="text-xs font-sans text-muted-foreground uppercase tracking-wider">
+                      <div key={d.date} className="bg-card border border-border rounded-2xl shadow-soft p-4">
+                        <p className="text-xs font-sans text-muted-foreground">
                           {d.dayName}
                         </p>
                         <p className="text-sm font-sans text-foreground mt-1">{d.outfit!.stylingTip}</p>

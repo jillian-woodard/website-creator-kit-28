@@ -405,10 +405,10 @@ const ForYou = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
         <Loader2 className="w-8 h-8 animate-spin text-primary mb-6" />
-        <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3 font-sans">
+        <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
           Curating your picks
         </p>
-        <h2 className="text-2xl md:text-3xl font-serif text-foreground max-w-md text-center leading-tight">
+        <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground max-w-md text-center leading-tight">
           Reading your profile. Finding pieces for you.
         </h2>
       </div>
@@ -426,13 +426,13 @@ const ForYou = () => {
             <ArrowLeft className="w-4 h-4" />
             Profile
           </button>
-          <span className="font-serif text-lg text-foreground">For You</span>
+          <span className="font-serif text-lg text-foreground">For you</span>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/saved")}
-              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+              className="rounded-full font-sans text-sm text-secondary hover:text-foreground gap-2"
             >
               <BookmarkCheck className="w-3.5 h-3.5" />
               Shortlist
@@ -442,7 +442,7 @@ const ForYou = () => {
               size="sm"
               onClick={() => generateRecs()}
               disabled={regenerating}
-              className="rounded-none font-sans text-xs uppercase tracking-wider gap-2"
+              className="rounded-full font-sans text-sm gap-2"
             >
               {regenerating ? (
                 <>
@@ -462,13 +462,13 @@ const ForYou = () => {
 
       <main className="container mx-auto px-6 lg:px-16 py-12 max-w-6xl">
         <div className="mb-8">
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-2 font-sans">
-            Curated For You
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-3">
+            Curated for you
           </p>
-          <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-3">
+          <h1 className="text-3xl md:text-5xl font-serif font-medium text-foreground mb-3">
             {styleProfile?.ai_keywords && styleProfile.ai_keywords.length > 0
               ? styleProfile.ai_keywords.slice(0, 2).join(" · ")
-              : "Your Picks"}
+              : "Your picks"}
           </h1>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
             {generatedAt && (
@@ -492,10 +492,10 @@ const ForYou = () => {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-1.5 text-xs font-sans uppercase tracking-wider rounded-none border transition-colors ${
+                className={`px-4 py-1.5 text-sm font-sans rounded-full transition-colors ${
                   selectedCategory === cat
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-muted-foreground hover:border-primary/30"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {cat}
@@ -504,7 +504,7 @@ const ForYou = () => {
           </div>
 
           <div className="flex items-center gap-4 flex-wrap">
-            <span className="text-xs uppercase tracking-wider text-muted-foreground font-sans">
+            <span className="text-xs text-muted-foreground font-sans">
               Price: ${priceMin} to ${priceMax}
             </span>
             <div className="flex items-center gap-2 flex-1 min-w-[200px] max-w-md">
@@ -557,13 +557,13 @@ const ForYou = () => {
               cat.products.length === 0 ? null : (
                 <section key={cat.category}>
                   <div className="flex items-baseline justify-between mb-4">
-                    <h2 className="text-2xl md:text-3xl font-serif text-foreground">{cat.category}</h2>
+                    <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground">{cat.category}</h2>
                     <p className="text-xs text-muted-foreground/70 font-sans">
                       {cat.products.length} {cat.products.length === 1 ? "pick" : "picks"}
                     </p>
                   </div>
 
-                  <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory -mx-6 px-6 lg:-mx-16 lg:px-16">
+                  <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory -mx-6 px-6 lg:-mx-16 lg:px-16">
                     {cat.products.map((p, i) => (
                       <a
                         key={`${cat.category}-${i}`}
@@ -572,7 +572,7 @@ const ForYou = () => {
                         rel="noopener noreferrer"
                         className="flex-shrink-0 w-48 md:w-56 group snap-start"
                       >
-                        <div className="aspect-[3/4] bg-muted overflow-hidden relative border border-border group-hover:border-primary/30 transition-colors">
+                        <div className="aspect-[3/4] bg-muted overflow-hidden relative rounded-2xl border border-border group-hover:border-primary/40 transition-colors shadow-soft">
                           {p.image ? (
                             <img
                               src={p.image}
@@ -626,13 +626,13 @@ const ForYou = () => {
                               </button>
                             </PopoverTrigger>
                             <PopoverContent
-                              className="w-56 p-2"
+                              className="w-56 p-2 rounded-2xl shadow-soft-lg"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                               }}
                             >
-                              <p className="text-xs font-sans text-muted-foreground uppercase tracking-wider mb-2 px-1">
+                              <p className="text-xs font-sans text-muted-foreground mb-2 px-1">
                                 Why not this one?
                               </p>
                               <div className="flex flex-col gap-1">
@@ -645,7 +645,7 @@ const ForYou = () => {
                                       e.stopPropagation();
                                       handleDismiss(cat, p, r.value);
                                     }}
-                                    className="text-left text-sm font-sans px-2 py-1.5 rounded-sm hover:bg-muted transition-colors"
+                                    className="text-left text-sm font-sans px-2 py-1.5 rounded-lg hover:bg-muted transition-colors"
                                   >
                                     {r.label}
                                   </button>
@@ -657,7 +657,7 @@ const ForYou = () => {
                                     e.stopPropagation();
                                     handleDismiss(cat, p);
                                   }}
-                                  className="text-left text-xs font-sans px-2 py-1.5 rounded-sm text-muted-foreground hover:bg-muted transition-colors border-t border-border mt-1 pt-2"
+                                  className="text-left text-xs font-sans px-2 py-1.5 rounded-lg text-muted-foreground hover:bg-muted transition-colors border-t border-border mt-1 pt-2"
                                 >
                                   Skip, just hide it
                                 </button>
@@ -669,7 +669,7 @@ const ForYou = () => {
                           </div>
                         </div>
                         <div className="pt-3">
-                          <p className="text-[10px] font-sans text-muted-foreground uppercase tracking-wider truncate">
+                          <p className="text-[11px] font-sans text-muted-foreground truncate">
                             {p.retailer || "Retailer"}
                           </p>
                           <p className="text-sm font-sans text-foreground leading-tight mt-0.5 line-clamp-2">
@@ -680,6 +680,10 @@ const ForYou = () => {
                               ${p.price}
                             </p>
                           )}
+                          <p className="text-[11px] font-sans text-muted-foreground/70 mt-1.5 leading-snug">
+                            Why this was picked: from {p.retailer || "a brand"}, matched to your
+                            style and inside your budget.
+                          </p>
                         </div>
                       </a>
                     ))}
