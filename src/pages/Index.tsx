@@ -13,6 +13,7 @@ import {
   Wand2,
   ShoppingBasket,
   Shirt as ShirtIcon,
+  Check,
 } from "lucide-react";
 import { styleIcons } from "@/lib/styleIconsData";
 import {
@@ -38,69 +39,44 @@ const JOURNEY = [
   {
     icon: Compass,
     stage: "Discover",
-    title: "Find what resonates",
-    desc: "Explore real style references and reference looks until something clicks. No mood boards required.",
+    question: "Who do I want to become?",
+    desc: "Start with inspiration, not inventory. Reference looks, visual preferences, a few honest questions.",
   },
   {
     icon: Wand2,
     stage: "Define",
-    title: "Understand your style",
-    desc: "We translate what you're drawn to into a real style profile: silhouettes, palette, formality range, budget.",
+    question: "What is my style, really?",
+    desc: "Figure builds an evolving understanding of your taste from your answers, your closet, and your feedback.",
   },
   {
     icon: ShoppingBasket,
     stage: "Shop",
-    title: "See picks that make sense",
-    desc: "Every recommendation comes with a reason it was chosen, from real retailers, inside your budget.",
+    question: "What should I actually buy?",
+    desc: "Only pieces that genuinely fit your style, your budget, and your body. Every pick explains why.",
   },
   {
     icon: ShirtIcon,
     stage: "Wear",
-    title: "Actually wear it",
-    desc: "Your closet becomes part of the system: what you own shapes what gets suggested next, and what to pack.",
+    question: "How do I get more from what I own?",
+    desc: "A digital wardrobe, trip planning, and outfits — built from what's already in your closet first.",
   },
 ];
 
-// Illustrative examples of the "why this was picked" reasoning the recommendation engine
-// actually uses (aesthetic-tag overlap + budget fit), paired with real style photography
-// already on the site rather than stock or synthetic images.
-const WHY_EXAMPLES = [
-  {
-    icon: styleIcons.find((i) => i.id === "aylin"),
-    tag: "Classic & Tailored",
-    reason: "Matches your tailored, minimal silhouette and sits inside your everyday budget.",
-  },
-  {
-    icon: styleIcons.find((i) => i.id === "camila"),
-    tag: "Red Carpet & Editorial",
-    reason: "Picked for the polished, editorial finish you responded to during your interview.",
-  },
-  {
-    icon: styleIcons.find((i) => i.id === "carol"),
-    tag: "Streetwear & Casual",
-    reason: "An effortless, casual piece from a brand you've saved from before.",
-  },
-].filter((e) => e.icon);
-
-const PILLARS = [
-  {
-    title: "Aspiration first",
-    desc: "We start with who you're becoming, not a warehouse of inventory to sort through.",
-  },
-  {
-    title: "Real recommendations",
-    desc: "Every piece is a real, shoppable product from a real retailer, matched to your actual budget.",
-  },
-  {
-    title: "Fewer, better decisions",
-    desc: "Less scrolling, less second-guessing. A shortlist you can actually act on.",
-  },
+// Illustrative "Figure has learned" checklist for the Style Understanding module. Maps
+// directly to real style_profiles fields (ai_keywords, silhouette_type, budget range,
+// evolving feedback signal) — this is what the section looks like once populated, not
+// invented categories.
+const LEARNED_EXAMPLES = [
+  "You gravitate toward structured, tailored silhouettes",
+  "Warm neutrals dominate almost everything you save",
+  "You hold a consistent budget, $60 to $250 a piece",
+  "You're getting more open to color than you were a month ago",
 ];
 
 const Index = () => {
   const navigate = useNavigate();
-  const marqueeIcons = [...styleIcons, ...styleIcons];
-  const heroIcons = styleIcons.slice(0, 3);
+  const heroIcon = styleIcons.find((i) => i.id === "julia") ?? styleIcons[0];
+  const recExampleIcon = styleIcons.find((i) => i.id === "aylin") ?? styleIcons[1];
 
   const scrollToJourney = () => {
     document.getElementById("journey")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -166,21 +142,19 @@ const Index = () => {
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="px-6 lg:px-16 pt-16 md:pt-24 pb-20 md:pb-28">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-[1.1fr_0.9fr] gap-14 lg:gap-20 items-center">
+      {/* SECTION 1 — HERO */}
+      <section className="px-6 lg:px-16 pt-14 md:pt-20 pb-20 md:pb-28">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-[0.85fr_1.15fr] gap-12 lg:gap-16 items-center">
           <div>
-            <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-6">
-              A personal styling companion
-            </p>
-            <h1 className="font-serif font-medium text-foreground leading-[1.05] text-4xl sm:text-5xl md:text-6xl max-w-xl">
+            <h1 className="font-serif font-medium text-foreground leading-[1.05] text-4xl sm:text-5xl md:text-6xl">
               Understand your style.
               <br />
               Shop with confidence.
             </h1>
             <p className="text-base md:text-lg font-sans font-light text-secondary max-w-md leading-relaxed mt-6">
-              Figure helps you define your taste before you spend a dollar on it, then shows you
-              real, shoppable pieces that actually fit who you're becoming.
+              Figure helps you discover your personal style and recommends clothing you'll
+              actually love — based on your aspirations, your body, your budget, and what you
+              already own.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-10">
               <Button
@@ -188,7 +162,7 @@ const Index = () => {
                 onClick={() => navigate("/interview")}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-sm font-sans rounded-full gap-2 group"
               >
-                Start your style profile
+                Find my style
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Button>
               <Button
@@ -200,88 +174,34 @@ const Index = () => {
                 See how it works
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground font-sans mt-4">Free · No account needed to start</p>
           </div>
 
-          {/* Editorial image collage — real style photography already on the site */}
-          <div className="relative h-[420px] md:h-[480px] hidden sm:block">
-            <div className="absolute top-0 right-6 w-[62%] aspect-[3/4] rounded-3xl overflow-hidden shadow-soft-lg">
-              <img
-                src={heroIcons[0]?.img}
-                alt={heroIcons[0]?.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="absolute bottom-0 left-0 w-[46%] aspect-[3/4] rounded-3xl overflow-hidden shadow-soft-lg border-4 border-background">
-              <img
-                src={heroIcons[1]?.img}
-                alt={heroIcons[1]?.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
+          {/* One dominant editorial image, not a collage — real style photography already on the site */}
+          <div className="aspect-[4/5] md:aspect-[16/11] rounded-3xl overflow-hidden shadow-soft-lg">
+            <img
+              src={heroIcon.img}
+              alt={heroIcon.name}
+              className="w-full h-full object-cover object-top"
+            />
           </div>
         </div>
       </section>
 
-      {/* STYLE UNDERSTANDING MODULE */}
+      {/* SECTION 2 — THE PROBLEM */}
       <section className="px-6 lg:px-16 py-20 md:py-28 bg-card border-y border-border">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
-          <div>
-            <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
-              The core of Figure
-            </p>
-            <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight mb-5">
-              Style understanding, not just a profile.
-            </h2>
-            <p className="text-secondary font-sans leading-relaxed max-w-md mb-6">
-              Most tools ask what you already own or what you clicked on last. Figure starts
-              earlier — with a short interview about the way you actually want to look and live
-              in your clothes. That becomes "My Style": a living reference Figure checks every
-              recommendation against.
-            </p>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/interview")}
-              className="text-sm font-sans text-primary hover:text-primary/80 gap-2 px-0 hover:bg-transparent"
-            >
-              Build my style profile
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </div>
-
-          <div className="bg-background border border-border rounded-3xl p-6 md:p-8 shadow-soft">
-            <p className="text-xs font-sans uppercase tracking-[0.18em] text-muted-foreground mb-5">
-              My style — example
-            </p>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {["Minimalist", "Effortless", "Polished"].map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs font-sans px-3 py-1.5 rounded-full bg-muted text-foreground"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-baseline justify-between border-t border-border pt-4">
-                <span className="text-sm font-sans text-muted-foreground">Silhouette</span>
-                <span className="text-sm font-sans text-foreground">Structured, clean lines</span>
-              </div>
-              <div className="flex items-baseline justify-between border-t border-border pt-4">
-                <span className="text-sm font-sans text-muted-foreground">Budget per piece</span>
-                <span className="text-sm font-sans text-foreground">$60–250</span>
-              </div>
-              <div className="flex items-baseline justify-between border-t border-border pt-4">
-                <span className="text-sm font-sans text-muted-foreground">Dress for</span>
-                <span className="text-sm font-sans text-foreground">Everyday, going out</span>
-              </div>
-            </div>
-          </div>
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="font-serif text-2xl md:text-4xl text-foreground leading-snug">
+            You have Pinterest boards. Saved reels. A closet full of clothes you don't quite
+            wear. And somehow, you still don't know what to buy next.
+          </p>
+          <p className="text-secondary font-sans mt-8 leading-relaxed">
+            Figure starts one step earlier — with who you're trying to become, not what's
+            already in stock.
+          </p>
         </div>
       </section>
 
-      {/* JOURNEY: Discover -> Define -> Shop -> Wear */}
+      {/* SECTION 3 — THE JOURNEY */}
       <section id="journey" className="px-6 lg:px-16 py-20 md:py-28 scroll-mt-20">
         <div className="max-w-7xl mx-auto">
           <div className="mb-14 md:mb-16 max-w-xl">
@@ -294,19 +214,19 @@ const Index = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {JOURNEY.map((step, idx) => (
+            {JOURNEY.map((step) => (
               <div
                 key={step.stage}
                 className="bg-card border border-border rounded-3xl p-6 shadow-soft flex flex-col"
               >
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-6">
-                  <step.icon className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-2 mb-5">
+                  <step.icon className="w-4 h-4 text-primary" />
+                  <p className="text-xs font-sans uppercase tracking-[0.16em] text-muted-foreground">
+                    {step.stage}
+                  </p>
                 </div>
-                <p className="text-xs font-sans uppercase tracking-[0.16em] text-muted-foreground mb-2">
-                  {String(idx + 1).padStart(2, "0")} · {step.stage}
-                </p>
                 <h3 className="font-serif text-lg text-foreground mb-2 leading-snug">
-                  {step.title}
+                  {step.question}
                 </h3>
                 <p className="text-sm text-secondary font-sans leading-relaxed">
                   {step.desc}
@@ -317,108 +237,140 @@ const Index = () => {
         </div>
       </section>
 
-      {/* WHY THIS WAS PICKED */}
+      {/* SECTION 4 — STYLE UNDERSTANDING (emotional centerpiece) */}
       <section className="px-6 lg:px-16 py-20 md:py-28 bg-card border-y border-border">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
-            <div className="max-w-lg">
-              <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
-                Recommendations, explained
-              </p>
-              <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight">
-                Every pick comes with a reason.
-              </h2>
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4 text-center">
+            Figure's understanding
+          </p>
+          <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight mb-14 text-center">
+            The goal isn't more options. It's feeling understood.
+          </h2>
+
+          <div className="bg-background border border-border rounded-3xl shadow-soft-lg p-8 md:p-12">
+            <div className="flex items-baseline justify-between mb-2">
+              <p className="text-xs font-sans text-muted-foreground">Example — current style</p>
+              <p className="text-sm font-sans font-medium text-primary">91% understood</p>
             </div>
-            <p className="text-secondary font-sans text-sm md:text-base max-w-sm">
-              No black box. You'll always see why something showed up, so it's easier to trust
-              and faster to decide.
-            </p>
-          </div>
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden mb-8">
+              <div className="h-full bg-primary rounded-full" style={{ width: "91%" }} />
+            </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {WHY_EXAMPLES.map((ex) => (
-              <div
-                key={ex.tag}
-                className="bg-background border border-border rounded-3xl overflow-hidden shadow-soft"
-              >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={ex.icon!.img}
-                    alt={ex.icon!.name}
-                    className="w-full h-full object-cover object-top"
-                  />
-                </div>
-                <div className="p-5">
-                  <span className="inline-block text-xs font-sans px-3 py-1 rounded-full bg-muted text-foreground mb-3">
-                    {ex.tag}
-                  </span>
-                  <p className="text-sm font-sans text-secondary leading-relaxed">
-                    <span className="text-foreground font-medium">Why this was picked: </span>
-                    {ex.reason}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+            <div className="flex flex-wrap gap-2 mb-8">
+              {["Quiet luxury", "Parisian", "Relaxed tailoring"].map((tag) => (
+                <span
+                  key={tag}
+                  className="text-sm font-sans px-4 py-1.5 rounded-full bg-muted text-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
 
-          <div className="mt-10">
+            <p className="text-xs font-sans text-muted-foreground mb-4">Figure has learned</p>
+            <ul className="space-y-3 mb-8">
+              {LEARNED_EXAMPLES.map((line) => (
+                <li key={line} className="flex items-start gap-3 text-sm font-sans text-foreground">
+                  <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+
             <Button
               variant="ghost"
-              onClick={() => navigate("/for-you")}
+              onClick={() => navigate("/profile")}
               className="text-sm font-sans text-primary hover:text-primary/80 gap-2 px-0 hover:bg-transparent"
             >
-              See your picks
+              Improve my style
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </section>
 
-      {/* WARDROBE + TRIP PLANNING PREVIEW */}
+      {/* SECTION 5 — ONE RECOMMENDATION, EXPLAINED */}
       <section className="px-6 lg:px-16 py-20 md:py-28">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-14 max-w-xl">
-            <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
-              Beyond shopping
-            </p>
-            <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight">
-              Your closet is part of the system.
-            </h2>
-          </div>
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4 text-center">
+            Recommendations, explained
+          </p>
+          <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight mb-14 text-center">
+            Every pick comes with a reason.
+          </h2>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-card border border-border rounded-3xl p-8 shadow-soft flex flex-col">
-              <Shirt className="w-6 h-6 text-primary mb-6" />
-              <h3 className="font-serif text-xl text-foreground mb-3">My closet</h3>
-              <p className="text-sm text-secondary font-sans leading-relaxed mb-6 flex-1">
-                What you already own shapes what gets suggested next. One well-chosen blazer can
-                unlock two dozen outfits you hadn't put together yet — Figure surfaces those
-                combinations instead of leaving them buried in your closet.
+          <div className="bg-card border border-border rounded-3xl shadow-soft-lg overflow-hidden grid sm:grid-cols-[1fr_1.2fr]">
+            <div className="aspect-[4/5] sm:aspect-auto">
+              <img
+                src={recExampleIcon.img}
+                alt={recExampleIcon.name}
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div className="p-8 flex flex-col">
+              <p className="text-xs font-sans text-muted-foreground mb-2">Example recommendation</p>
+              <div className="flex items-baseline justify-between mb-1">
+                <h3 className="font-serif text-xl text-foreground">COS wool-blend blazer</h3>
+              </div>
+              <span className="inline-block w-fit text-xs font-sans px-3 py-1 rounded-full bg-muted text-foreground mb-6">
+                Best match
+              </span>
+              <ul className="space-y-2.5 mb-8 flex-1">
+                {[
+                  "Fits your style",
+                  "Fits your budget",
+                  "Works with 11 pieces you already own",
+                  "Right for your upcoming trip",
+                ].map((line) => (
+                  <li key={line} className="flex items-start gap-2.5 text-sm font-sans text-secondary">
+                    <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    {line}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                onClick={() => navigate("/for-you")}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm w-fit gap-2"
+              >
+                See your picks
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 6 — WARDROBE INTELLIGENCE */}
+      <section className="px-6 lg:px-16 py-20 md:py-28 bg-card border-y border-border">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4 text-center">
+            Beyond shopping
+          </p>
+          <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight mb-14 text-center">
+            Your closet is intelligence, not storage.
+          </h2>
+
+          <div className="bg-background border border-border rounded-3xl shadow-soft p-8 md:p-12 grid sm:grid-cols-2 gap-10 items-center">
+            <div>
+              <p className="text-xs font-sans text-muted-foreground mb-4">Example — wardrobe insight</p>
+              <p className="text-sm font-sans text-foreground mb-2">You already own</p>
+              <ul className="space-y-1.5 text-sm font-sans text-secondary">
+                <li>14 tops</li>
+                <li>9 bottoms</li>
+                <li>1 blazer</li>
+              </ul>
+            </div>
+            <div className="sm:border-l sm:border-border sm:pl-10">
+              <p className="font-serif text-xl text-foreground leading-snug mb-6">
+                A neutral blazer would unlock about 18 new outfits from what's already in your
+                closet.
               </p>
               <Button
                 variant="ghost"
                 onClick={() => navigate("/closet")}
-                className="text-sm font-sans text-primary hover:text-primary/80 gap-2 px-0 hover:bg-transparent w-fit"
+                className="text-sm font-sans text-primary hover:text-primary/80 gap-2 px-0 hover:bg-transparent"
               >
-                Mix my closet
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <div className="bg-card border border-border rounded-3xl p-8 shadow-soft flex flex-col">
-              <CalendarDays className="w-6 h-6 text-primary mb-6" />
-              <h3 className="font-serif text-xl text-foreground mb-3">Trip planning</h3>
-              <p className="text-sm text-secondary font-sans leading-relaxed mb-6 flex-1">
-                Planning ahead starts with what's already in your closet. Figure builds outfits
-                from pieces you own first, and only recommends buying something new to fill an
-                actual gap.
-              </p>
-              <Button
-                variant="ghost"
-                onClick={() => navigate("/planner")}
-                className="text-sm font-sans text-primary hover:text-primary/80 gap-2 px-0 hover:bg-transparent w-fit"
-              >
-                Plan your week
+                See my closet
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
@@ -426,88 +378,20 @@ const Index = () => {
         </div>
       </section>
 
-      {/* STYLE ICONS — looping marquee, kept as real-photography inspiration */}
-      <section className="py-16 md:py-24 bg-card border-y border-border overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-16 mb-10 md:mb-14">
-          <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
-            Inspiration
-          </p>
-          <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight max-w-md">
-            Styles we love.
-          </h2>
-          <p className="text-secondary font-sans text-sm md:text-base max-w-md mt-3">
-            We don't copy their outfit. We translate it onto your body, your budget, your taste.
-          </p>
-        </div>
-
-        <div
-          className="relative w-full"
-          style={{
-            maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-          }}
-        >
-          <div className="flex gap-5 w-max animate-marquee">
-            {marqueeIcons.map((icon, idx) => (
-              <figure key={`${icon.id}-${idx}`} className="flex-shrink-0 w-40 md:w-52">
-                <div className="aspect-[3/4] overflow-hidden bg-muted rounded-2xl">
-                  <img
-                    src={icon.img}
-                    alt={icon.name}
-                    className="w-full h-full object-cover object-top"
-                    loading="lazy"
-                  />
-                </div>
-                <figcaption className="pt-3">
-                  <p className="font-serif text-foreground text-sm leading-tight">{icon.name}</p>
-                  <p className="text-[11px] font-sans uppercase tracking-[0.14em] text-muted-foreground mt-1">
-                    {icon.from}
-                  </p>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* WHY FIGURE — 3 pillars */}
-      <section className="px-6 lg:px-16 py-20 md:py-28">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-14 max-w-xl">
-            <p className="text-xs font-sans font-medium tracking-[0.18em] uppercase text-primary mb-4">
-              Why Figure
-            </p>
-            <h2 className="font-serif font-medium text-foreground text-3xl md:text-4xl leading-tight">
-              Not another shopping app.
-            </h2>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-8 md:gap-10">
-            {PILLARS.map((pillar) => (
-              <div key={pillar.title} className="border-t border-border pt-6">
-                <h3 className="font-serif text-lg text-foreground mb-3">{pillar.title}</h3>
-                <p className="text-sm text-secondary font-sans leading-relaxed">{pillar.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CLOSE CTA */}
+      {/* SECTION 7 — FINAL CTA */}
       <section className="px-6 lg:px-16 py-24 md:py-32 bg-foreground">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="font-serif font-medium text-background text-3xl md:text-5xl leading-tight mb-6">
-            Your style era starts now.
+          <h2 className="font-serif font-medium text-background text-3xl md:text-5xl leading-tight mb-10">
+            Your style already exists.
+            <br />
+            Figure helps you understand it.
           </h2>
-          <p className="text-background/60 font-sans mb-10 text-base md:text-lg">
-            Seven minutes. Walk away with a style profile and picks you can actually buy.
-          </p>
           <Button
             size="lg"
             onClick={() => navigate("/interview")}
             className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-sm font-sans rounded-full gap-2 group"
           >
-            Take the style interview
+            Find my style
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Button>
         </div>
