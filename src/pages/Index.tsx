@@ -8,7 +8,6 @@ import {
   Shirt as ShirtIcon,
   Check,
 } from "lucide-react";
-import { styleIcons } from "@/lib/styleIconsData";
 import SiteHeader from "@/components/SiteHeader";
 
 // The Discover -> Define -> Shop -> Wear product journey. Each stage maps to a real,
@@ -54,8 +53,6 @@ const LEARNED_EXAMPLES = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const heroIcon = styleIcons.find((i) => i.id === "julia") ?? styleIcons[0];
-  const recExampleIcon = styleIcons.find((i) => i.id === "aylin") ?? styleIcons[1];
 
   const scrollToJourney = () => {
     document.getElementById("journey")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -99,13 +96,64 @@ const Index = () => {
             </div>
           </div>
 
-          {/* One dominant editorial image, not a collage — real style photography already on the site */}
-          <div className="aspect-[4/5] md:aspect-[16/11] rounded-3xl overflow-hidden shadow-soft-lg">
-            <img
-              src={heroIcon.img}
-              alt={heroIcon.name}
-              className="w-full h-full object-cover object-top"
-            />
+          {/* Product mockup, not a photo — a live-look preview of the actual Style
+              Understanding module, echoing how Linear/Arc/Apple show the product itself
+              in the hero rather than a lifestyle image. */}
+          <div className="relative pb-10 pl-10 md:pb-14 md:pl-14">
+            <div className="bg-card border border-border rounded-3xl shadow-soft-lg p-7 md:p-9">
+              <div className="flex items-center gap-2 mb-8">
+                <div className="flex gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-border" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-border" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-border" />
+                </div>
+                <p className="text-xs font-sans text-muted-foreground ml-2">Your style profile</p>
+              </div>
+
+              <div className="flex items-baseline justify-between mb-2">
+                <p className="text-xs font-sans text-muted-foreground">Example</p>
+                <p className="text-sm font-sans font-medium text-primary">91% understood</p>
+              </div>
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden mb-6">
+                <div className="h-full bg-primary rounded-full" style={{ width: "91%" }} />
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                {["Quiet luxury", "Parisian", "Relaxed tailoring"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs font-sans px-3 py-1.5 rounded-full bg-muted text-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="border-t border-border pt-6 space-y-3">
+                {["Structured silhouettes suit you", "You invest in timeless basics"].map(
+                  (line) => (
+                    <div
+                      key={line}
+                      className="flex items-start gap-2.5 text-sm font-sans text-secondary"
+                    >
+                      <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      {line}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Layered secondary card, offset bottom-left */}
+            <div className="hidden md:block absolute bottom-0 left-0 bg-background border border-border rounded-2xl shadow-soft-lg p-5 w-56">
+              <p className="text-xs font-sans text-muted-foreground mb-1.5">Recommended</p>
+              <p className="font-serif text-sm text-foreground mb-2 leading-snug">
+                COS wool-blend blazer
+              </p>
+              <span className="text-xs font-sans px-2.5 py-1 rounded-full bg-muted text-foreground">
+                Best match
+              </span>
+            </div>
           </div>
         </div>
       </section>
@@ -223,12 +271,8 @@ const Index = () => {
           </h2>
 
           <div className="bg-card border border-border rounded-3xl shadow-soft-lg overflow-hidden grid sm:grid-cols-[1fr_1.2fr]">
-            <div className="aspect-[4/5] sm:aspect-auto">
-              <img
-                src={recExampleIcon.img}
-                alt={recExampleIcon.name}
-                className="w-full h-full object-cover object-top"
-              />
+            <div className="aspect-[4/5] sm:aspect-auto bg-muted flex items-center justify-center">
+              <ShirtIcon className="w-14 h-14 text-primary/30" strokeWidth={1.25} />
             </div>
             <div className="p-8 flex flex-col">
               <p className="text-xs font-sans text-muted-foreground mb-2">Example recommendation</p>
