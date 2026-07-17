@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Shirt, CalendarDays, AlertTriangle, Loader2, ExternalLink, Sparkles, ArrowRight, Bookmark, BookmarkCheck, Link2, Check } from "lucide-react";
 import { womenBodyTypes, menBodyTypes } from "@/lib/bodyTypeData";
 import { useSavedItems } from "@/hooks/useSavedItems";
+import SiteHeader from "@/components/SiteHeader";
 import { toast } from "sonner";
 import {
   getFullStyleProfile,
@@ -215,6 +216,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SiteHeader />
       {/* Save banner for guests */}
       {isGuest && (
         <div className="bg-primary text-primary-foreground px-6 py-3 flex items-center justify-between gap-4">
@@ -231,7 +233,7 @@ const Profile = () => {
       )}
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <header className="bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => navigate("/interview")}

@@ -1,87 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Sparkles, UserCircle, ShoppingBag, Shirt, CalendarDays, ChevronDown, Info } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-const EXPLORE_ITEMS = [
-  { icon: Sparkles, title: "Style interview", desc: "Build your aesthetic identity", to: "/interview" },
-  { icon: UserCircle, title: "My style", desc: "Keywords, silhouettes, palette", to: "/profile" },
-  { icon: ShoppingBag, title: "For you", desc: "Curated picks within your budget", to: "/for-you" },
-  { icon: Shirt, title: "My closet", desc: "What you already own", to: "/closet" },
-  { icon: CalendarDays, title: "Trip planning", desc: "Outfits planned ahead", to: "/planner" },
-  { icon: Info, title: "About us", desc: "Our mission and why we built it", to: "/about" },
-];
+import SiteHeader from "@/components/SiteHeader";
 
 const About = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-20 bg-background/90 backdrop-blur-md border-b border-border px-6 lg:px-16 py-5 flex items-center justify-between">
-        <button
-          onClick={() => navigate("/")}
-          className="text-sm font-serif font-medium tracking-tight text-foreground"
-        >
-          Figure
-        </button>
-        <div className="flex items-center gap-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-sm font-sans text-secondary hover:text-foreground gap-1.5 rounded-full"
-              >
-                Explore
-                <ChevronDown className="w-3.5 h-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-72 bg-card border border-border rounded-2xl p-2 shadow-soft-lg"
-            >
-              {EXPLORE_ITEMS.map((item) => (
-                <DropdownMenuItem
-                  key={item.to}
-                  onSelect={() => navigate(item.to)}
-                  className="flex items-start gap-3 px-3 py-3 cursor-pointer rounded-xl focus:bg-muted"
-                >
-                  <item.icon className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="font-serif text-sm text-foreground leading-tight">
-                      {item.title}
-                    </span>
-                    <span className="text-xs font-sans text-muted-foreground mt-0.5">
-                      {item.desc}
-                    </span>
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/auth")}
-            className="text-sm font-sans text-secondary hover:text-foreground rounded-full"
-          >
-            Sign in
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => navigate("/auth?mode=signup")}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-sans rounded-full px-5"
-          >
-            Sign up
-          </Button>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* BLOCK 1 — ABOUT US */}
       <section className="pt-20 md:pt-28 pb-20 md:pb-28 bg-background">

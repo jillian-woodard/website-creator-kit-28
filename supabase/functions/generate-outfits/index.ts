@@ -20,6 +20,7 @@ interface OutfitItemPlan {
   category: string;
   fromCloset: boolean;
   searchQuery?: string; // only for non-closet items
+  broadSearchQuery?: string; // simpler fallback query, only for non-closet items
 }
 
 interface OutfitPlan {
@@ -97,7 +98,12 @@ For NEW items to buy, do NOT invent brand names or product names. Instead, write
 - "black leather loafers women minimalist"
 - "ivory silk slip midi dress"
 
-Do NOT include brand names in the searchQuery unless the user's profile specifically signals a brand. Let the catalog search surface the best options.
+Also write a broadSearchQuery: a simpler, more generic 2 to 4 word version of the same item (drop color/fit/material qualifiers, keep just the core item type and gender), used as a fallback if the specific search comes up empty. Examples:
+- searchQuery "cream oversized wool blazer women" -> broadSearchQuery "women's blazer"
+- searchQuery "dark wash high waisted straight jeans" -> broadSearchQuery "women's jeans"
+- searchQuery "black leather loafers women minimalist" -> broadSearchQuery "women's loafers"
+
+Do NOT include brand names in either query unless the user's profile specifically signals a brand. Let the catalog search surface the best options.
 
 RULES:
 - Prioritize closet items when possible
@@ -118,7 +124,7 @@ JSON shape:
   ]
 }
 
-For items where fromCloset is false, also include a searchQuery field.
+For items where fromCloset is false, also include a searchQuery field and a broadSearchQuery field.
 
 The outfits array must have exactly ${days.length} entries, one per day in order.`;
 
@@ -160,12 +166,16 @@ The outfits array must have exactly ${days.length} entries, one per day in order
 
     const plan: { outfits: OutfitPlan[] } = JSON.parse(jsonStr);
 
-    // STEP 2: Collect all unique search queries from non-closet items
+    // STEP 2: Collect all unique search queries from non-closet items.
+    // We collect both the specific searchQuery and the broader fallback broadSearchQuery so
+    // we can retry with a wider net when the specific query comes up empty, instead of going
+    // straight to a generic Google Shopping search link.
     const queriesToFetch = new Set<string>();
     for (const outfit of plan.outfits) {
       for (const item of outfit.items) {
-        if (!item.fromCloset && item.searchQuery) {
-          queriesToFetch.add(item.searchQuery);
+        if (!item.fromCloset) {
+          if (item.searchQuery) queriesToFetch.add(item.searchQuery);
+          if (item.broadSearchQuery) queriesToFetch.add(item.broadSearchQuery);
         }
       }
     }
@@ -188,7 +198,7 @@ The outfits array must have exactly ${days.length} entries, one per day in order
               query,
               budgetMin,
               budgetMax,
-              limit: 4,
+              limit: 8,
             }),
           });
           if (resp.ok) {
@@ -219,11 +229,27 @@ The outfits array must have exactly ${days.length} entries, one per day in order
         }
 
         const query = item.searchQuery || item.name;
-        const products = productLookup.get(query) || [];
+        const specificProducts = productLookup.get(query) || [];
+        const broadQuery = item.broadSearchQuery;
+        const broadProducts = broadQuery ? productLookup.get(broadQuery) || [] : [];
+
+        // Prefer the specific query's results; retry with the broader query if the specific
+        // one came up empty rather than dropping straight to a search-page fallback link.
+        const products = specificProducts.length > 0 ? specificProducts : broadProducts;
         const top = products[0];
 
         if (top) {
-          // We have a real product
+          // We have a real product. Surface up to 3 real shop links (top match plus
+          // alternatives) so the UI isn't limited to a single retailer per item.
+          const linkCandidates = products.slice(0, 4);
+          const retailerLinks = linkCandidates
+            .filter((p) => p.link)
+            .slice(0, 3)
+            .map((p) => ({
+              name: p.retailer || "Shop",
+              url: p.link,
+            }));
+
           return {
             name: top.title,
             category: item.category,
@@ -231,8 +257,9 @@ The outfits array must have exactly ${days.length} entries, one per day in order
             brand: top.retailer,
             estimatedPrice: top.price,
             image: top.image,
-            searchUrl: top.link, // direct link to the product
+            searchUrl: top.link, // direct link to the product (kept as a single-link fallback)
             retailer: top.retailer,
+            retailerLinks,
             alternatives: products.slice(1, 4).map((p) => ({
               name: p.title,
               price: p.price,
@@ -243,8 +270,10 @@ The outfits array must have exactly ${days.length} entries, one per day in order
           };
         }
 
-        // Fallback: no real products found, point to a Google Shopping search
-        const fallbackUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(query)}&tbs=mr:1,price:1,ppr_min:${budgetMin},ppr_max:${budgetMax}`;
+        // Fallback: neither the specific nor the broad query found a real product, point to
+        // a Google Shopping search using whichever query is more likely to return results.
+        const fallbackQuery = broadQuery || query;
+        const fallbackUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(fallbackQuery)}&tbs=mr:1,price:1,ppr_min:${budgetMin},ppr_max:${budgetMax}`;
         return {
           name: item.name,
           category: item.category,
