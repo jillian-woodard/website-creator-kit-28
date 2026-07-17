@@ -270,39 +270,42 @@ const Index = () => {
             Every pick comes with a reason.
           </h2>
 
-          <div className="bg-card border border-border rounded-3xl shadow-soft-lg overflow-hidden grid sm:grid-cols-[1fr_1.2fr]">
-            <div className="aspect-[4/5] sm:aspect-auto bg-muted flex items-center justify-center">
-              <ShirtIcon className="w-14 h-14 text-primary/30" strokeWidth={1.25} />
-            </div>
-            <div className="p-8 flex flex-col">
-              <p className="text-xs font-sans text-muted-foreground mb-2">Example recommendation</p>
-              <div className="flex items-baseline justify-between mb-1">
-                <h3 className="font-serif text-xl text-foreground">COS wool-blend blazer</h3>
+          <div className="max-w-md mx-auto bg-card border border-border rounded-3xl shadow-soft-lg p-7">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center flex-shrink-0">
+                <ShirtIcon className="w-8 h-8 text-primary/30" strokeWidth={1.25} />
               </div>
-              <span className="inline-block w-fit text-xs font-sans px-3 py-1 rounded-full bg-muted text-foreground mb-6">
-                Best match
-              </span>
-              <ul className="space-y-2.5 mb-8 flex-1">
-                {[
-                  "Fits your style",
-                  "Fits your budget",
-                  "Works with 11 pieces you already own",
-                  "Right for your upcoming trip",
-                ].map((line) => (
-                  <li key={line} className="flex items-start gap-2.5 text-sm font-sans text-secondary">
-                    <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    {line}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                onClick={() => navigate("/for-you")}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm w-fit gap-2"
-              >
-                See your picks
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              <div>
+                <p className="text-xs font-sans text-muted-foreground mb-1.5">Example recommendation</p>
+                <h3 className="font-serif text-lg text-foreground leading-snug">COS wool-blend blazer</h3>
+                <p className="text-sm font-sans text-secondary mt-1">$220 · COS</p>
+              </div>
             </div>
+
+            <p className="text-xs font-sans text-muted-foreground mb-3">Matched because</p>
+            <div className="flex flex-wrap gap-2 mb-7">
+              {[
+                "Fits your style",
+                "Fits your budget",
+                "Works with 11 pieces you own",
+                "Right for your trip",
+              ].map((tag) => (
+                <span
+                  key={tag}
+                  className="text-xs font-sans px-3 py-1.5 rounded-full bg-muted text-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => navigate("/for-you")}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-sans text-sm w-full gap-2"
+            >
+              See your picks
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </section>
